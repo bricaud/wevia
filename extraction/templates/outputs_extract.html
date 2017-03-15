@@ -1,0 +1,10 @@
+<meta http-equiv="Refresh" content="4">
+<!--<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>-->
+<h1>OUTPUTS</h1>
+Outputs from the text extraction process. The page automatically refresh every 4 seconds.
+
+<ul>
+{% for item in output_messages %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>

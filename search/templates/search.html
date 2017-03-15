@@ -1,0 +1,44 @@
+<head>
+	<title>Evia search</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+</head>
+<body>
+<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
+<h1>SEARCH IN DOCUMENTS WITH EVIAGLE</h1>
+<div>
+<form action="#" method="get">
+<input type="text" value="{{ query }}" name="search" size="20"/><input type="submit" class="btn" value="Search" name="make_search">
+</form>
+
+</div>
+<p> {{ console_message }}</p>
+{% if query %}
+<p>Search results for "{{ query }}"</p>
+	{% if search_results %}
+	<table style="border-collapse: collapse;">
+		<tr>
+			<th style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">String</th>
+			<th>Document id</th>
+			<th>Document</th>
+			<th>Positions</th>
+			<th>Surrounding text</th>
+		</tr>
+		{% for node,doc_dic in search_results.items %}
+			{% for document_id,info_dic in doc_dic.items %}
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ node }}</td>
+			<td style="border: 1px solid black; padding: 5px;">{{ document_id }}</td>
+			<td style="border: 1px solid black; padding: 5px;">{{ info_dic.name }}</td>
+			<td style="border: 1px solid black; padding: 5px;">{{ info_dic.word_positions}}</td>
+			<td style="border: 1px solid black; padding: 5px;">{{ info_dic.text}}</td>
+		</tr>
+			{% endfor %}
+		{% endfor %}
+	</table>
+	{% else %}
+	<p> {{ query }} not found.</p>
+	{% endif %}
+{% endif %}
+</body>

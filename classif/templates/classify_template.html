@@ -1,0 +1,98 @@
+<head>
+	<title>Evia</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+<script type="text/javascript">
+
+var loading = "{{ loading }}"
+/** Fonction basculant la visibilité d'un élément dom
+* @parameter anId string l'identificateur de la cible à montrer, cacher
+*/
+function toggle(anId)
+{
+	node = document.getElementById(anId);
+	var currentloading = getQueryVariable(0)
+	console.log(currentloading)
+	if (node.style.visibility=="hidden")
+	{
+		// Contenu caché, le montrer
+		node.style.visibility = "visible";
+		node.style.height = "auto";			// Optionnel rétablir la hauteur
+	}
+	else
+	{
+		// Contenu visible, le cacher
+		node.style.visibility = "hidden";
+		node.style.height = "0";			// Optionnel libérer l'espace
+	}
+}
+
+function getQueryVariable(variable_place) {
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    var pair = vars[variable_place].split('=');
+	return decodeURIComponent(pair[0]);
+}
+function loading_run_classify() {
+	if (loading != "classify") {
+		loading = "classify";
+		var currentloading = getQueryVariable(0);
+		console.log(currentloading);
+		if (currentloading != "run_classify") {
+			toggle('loading_run_classify');
+		}
+	}
+}
+</script>
+
+</head>
+<body>
+<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
+<h1>Classification des documents</h1>
+<p>Cliquez pour lancer la classification automatique</p>
+<!------------------------------------>
+<div>
+<form action="#" method="get">
+	<i class="fa fa-sitemap" aria-hidden="true"></i> <input type="submit" class="btn" value="Classify documents" name="run_classify" onclick="loading_run_classify()">
+</form>
+<div style="display: inline-block;">
+	<a href="results/"><i class="fa fa-sitemap fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<p>View classification</p>
+</div>
+</div>
+<div id="loading_run_classify" style="visibility: hidden;">
+<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+<span class="sr-only">Processing...</span>
+Processing... Please wait. <a href="outputs/" target="_blank">Show outputs</a>.
+</div>
+<!------------------------------------>
+<p>Optionnel: copie des documents class&eacute;s dans des r&eacute;pertoires.</p>
+<div>
+<form action="#" method="get">
+	<input type="submit" class="btn" value="Classification into folders" name="classify_in_folders">
+</form>
+</div>
+<!------------------------------------>
+<h2>Analyse des r&eacute;sultats</h2>
+<div id="next_step" style="display: inline-block;" >
+	<a href="../graphdesign/"><i class="fa fa-arrow-circle-left fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<p>Go back to the graph design</p>
+</div>
+<div style="display: inline-block;">
+	<a href="results/"><i class="fa fa-sitemap fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<p>View classification</p>
+</div>
+<div style="display: inline-block;">
+	<a href="../search"><i class="fa fa-search fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<p>Search text in the documents</p>
+</div>
+<div style="display: inline-block;">
+	<a href="../"><i class="fa fa-home fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<p>Main menu</p>
+</div>
+<p><b> Messages: {{ console_message }}</b></p>
+<a href="outputs/" target="_blank">Show outputs</a>
+</body>
