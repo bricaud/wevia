@@ -16,18 +16,21 @@ class EviaPaths():
 	def	__init__(self,PDF_PATH):
 
 		#self.PDF_PATH = PDF_PATH
-		self.PDF_PATH = os.path.join(PDF_PATH,'weviana')
-		self.PNG_PATH = os.path.join(self.PDF_PATH,'png')
-		self.TXT_PATH = os.path.join(self.PDF_PATH,'txt')
-		self.PICKLE_PATH = os.path.join(self.PDF_PATH,'pickle')
+		self.PDF_PATH = PDF_PATH
+		self.WEVIANA_PATH = os.path.join(self.PDF_PATH,'weviana')
+		self.PNG_PATH = os.path.join(self.WEVIANA_PATH,'png')
+		self.TXT_PATH = os.path.join(self.WEVIANA_PATH,'txt')
+		self.PICKLE_PATH = os.path.join(self.WEVIANA_PATH,'pickle')
 		self.TXT_PICKLE = os.path.join(self.PICKLE_PATH,'texts.pkl')
 		self.GRAPH_NAME = os.path.join(self.PICKLE_PATH,'graph.pkl')
-		self.CSV_PATH = os.path.join(self.PDF_PATH,'csv')
+		self.CSV_PATH = os.path.join(self.WEVIANA_PATH,'csv')
 		self.CSV_FILE = 'table_classif.csv'
 		self.CSV_full_name = os.path.join(self.CSV_PATH,self.CSV_FILE)	
-		self.CLASSIF_PATH = os.path.join(self.PDF_PATH,'classif')
-		self.LOGS_PATH = os.path.join(self.PDF_PATH,'logs')
+		self.CLASSIF_PATH = os.path.join(self.WEVIANA_PATH,'classif')
+		self.LOGS_PATH = os.path.join(self.WEVIANA_PATH,'logs')
 
+		if not os.path.exists(self.WEVIANA_PATH):
+			os.makedirs(self.WEVIANA_PATH)
 		if not os.path.exists(self.PNG_PATH):
 			os.makedirs(self.PNG_PATH)
 		if not os.path.exists(self.PICKLE_PATH):
