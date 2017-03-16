@@ -126,3 +126,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     BASE_DIR + '/static/',
 )
+
+# Path where to find the pdfs
+PDF_PATH =  '/mount/data'
