@@ -15,7 +15,8 @@ class EviaPaths():
 
 	def	__init__(self,PDF_PATH):
 
-		self.PDF_PATH = PDF_PATH
+		#self.PDF_PATH = PDF_PATH
+		self.PDF_PATH = os.path.join(PDF_PATH,'weviana')
 		self.PNG_PATH = os.path.join(self.PDF_PATH,'png')
 		self.TXT_PATH = os.path.join(self.PDF_PATH,'txt')
 		self.PICKLE_PATH = os.path.join(self.PDF_PATH,'pickle')

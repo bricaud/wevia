@@ -4,9 +4,11 @@ import commands.eviascripts as cevia
 import sys
 from contextlib import redirect_stdout 
 import io 
+from django.conf import settings
+PDF_PATH = settings.PDF_PATH
 
 stdoutstream = io.StringIO()
-PDF_PATH = '/media/benjamin/Largo/testspdfs'
+
 
 def index(request):
 	return HttpResponse("Hello, world. You're at the commands page.")

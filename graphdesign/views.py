@@ -3,9 +3,11 @@ import commands.eviascripts as cevia
 import sys
 from contextlib import redirect_stdout 
 import io 
+from django.conf import settings
 
 stdoutstream = io.StringIO()
-PDF_PATH = '/media/benjamin/Largo/testspdfs'
+#PDF_PATH = '/media/benjamin/Largo/testspdfs'
+PDF_PATH = settings.PDF_PATH
 
 def index(request):
 	global PDF_PATH
