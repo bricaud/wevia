@@ -95,6 +95,9 @@ def run_classify(evia_paths):
 	elif not os.path.isfile(GRAPH_NAME):
 		print('No graph found. Please construct the graph first. ')
 		console_message = 'No graph found. Please construct the graph first. '
+	elif not os.path.isfile(EX_TXT_PICKLE):
+		print('No file with info on extracted text. Please extract the text first with pdf2txt. ')
+		console_message = 'No file with info on extracted text. Please extract the text first with pdf2txt. '
 	else:
 		txt2graph.doc_classif(GRAPH_NAME,TXT_PICKLE,EX_TXT_PICKLE,CSV_full_name)
 		console_message = 'CSV file containing the classification saved in {}'.format(CSV_full_name)
