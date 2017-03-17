@@ -21,6 +21,7 @@ class EviaPaths():
 		self.PNG_PATH = os.path.join(self.WEVIANA_PATH,'png')
 		self.TXT_PATH = os.path.join(self.WEVIANA_PATH,'txt')
 		self.PICKLE_PATH = os.path.join(self.WEVIANA_PATH,'pickle')
+		self.EX_TXT_PICKLE = os.path.join(self.PICKLE_PATH,'extract_texts.pkl')
 		self.TXT_PICKLE = os.path.join(self.PICKLE_PATH,'texts.pkl')
 		self.GRAPH_NAME = os.path.join(self.PICKLE_PATH,'graph.pkl')
 		self.CSV_PATH = os.path.join(self.WEVIANA_PATH,'csv')
@@ -57,8 +58,9 @@ def run_pdf2txt(evia_paths):
 	LOGS_PATH = evia_paths.LOGS_PATH
 	PNG_PATH = evia_paths.PNG_PATH
 	TXT_PATH = evia_paths.TXT_PATH
+	EX_TXT_PICKLE = evia_paths.EX_TXT_PICKLE
 	print('Running pdf2txt on',PDF_PATH)
-	output_message = pdf2txtbox.pdf2txt(PDF_PATH,PNG_PATH,TXT_PATH,LOGS_PATH)
+	output_message = pdf2txtbox.pdf2txt(PDF_PATH,PNG_PATH,TXT_PATH,LOGS_PATH,EX_TXT_PICKLE)
 	print('Computation done. Texts extracted.')
 	return 'Computation done. Texts extracted.' + '\n' + output_message
 
@@ -77,7 +79,7 @@ def make_graph(graph_threshold,evia_paths):
 		# Extract the text from the txt files and save them in a pickle file
 		textbox.auto_extract(TXT_PATH,TXT_PICKLE,LOGS_PATH)
 		# Create the graph from the pickle file
-		output_message = txt2graph.run(TXT_PICKLE,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
+		output_message = txt2graph.run(TXT_PICKLE,EX_TXT_PICKLE,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
 		print('Graph saved in file {}'.format(GRAPH_NAME))
 		console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME)
 	return console_message
