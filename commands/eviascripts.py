@@ -79,7 +79,7 @@ def make_graph(graph_threshold,evia_paths):
 		# Extract the text from the txt files and save them in a pickle file
 		textbox.auto_extract(TXT_PATH,TXT_PICKLE,LOGS_PATH)
 		# Create the graph from the pickle file
-		output_message = txt2graph.run(TXT_PICKLE,EX_TXT_PICKLE,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
+		output_message = txt2graph.run(TXT_PICKLE,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
 		print('Graph saved in file {}'.format(GRAPH_NAME))
 		console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME)
 	return console_message
@@ -88,6 +88,7 @@ def run_classify(evia_paths):
 	CSV_full_name = evia_paths.CSV_full_name
 	TXT_PICKLE = evia_paths.TXT_PICKLE
 	GRAPH_NAME = evia_paths.GRAPH_NAME
+	EX_TXT_PICKLE = evia_paths.EX_TXT_PICKLE
 	if not os.path.isfile(TXT_PICKLE):
 		print('No text data file. Please extract the text first with pdf2txt. ')
 		console_message = 'No text data file found. Please extract the text first with pdf2txt. '
@@ -95,7 +96,7 @@ def run_classify(evia_paths):
 		print('No graph found. Please construct the graph first. ')
 		console_message = 'No graph found. Please construct the graph first. '
 	else:
-		txt2graph.doc_classif(GRAPH_NAME,TXT_PICKLE,CSV_full_name)
+		txt2graph.doc_classif(GRAPH_NAME,TXT_PICKLE,EX_TXT_PICKLE,CSV_full_name)
 		console_message = 'CSV file containing the classification saved in {}'.format(CSV_full_name)
 	return console_message
 
@@ -142,33 +143,35 @@ def csv2folders(evia_paths):
 	PDF_PATH = evia_paths.PDF_PATH
 	CSV_full_name = evia_paths.CSV_full_name
 	CLASSIF_PATH = evia_paths.CLASSIF_PATH
+
 	if not os.path.isfile(CSV_full_name):
 		print('No classification found. Please run the document classification. ')
-		console_message = 'No classification found. Please run the document classification. '
-	else:
-		# Load the data from the CSV file
-		cluster_dic ={}
-		print('Loading: ',CSV_full_name)
-		with open(CSV_full_name, 'r') as csvfile:
-			clusters_table = csv.reader(csvfile, delimiter=',')
-			for row in clusters_table:
-				key = row[0]
-				cluster_dic[key] = row[1:]
-		# copy classified the files in folders
-		for key in cluster_dic.keys():
-			c_folder = 'cluster_'+str(key)
-			c_path = os.path.join(CLASSIF_PATH,c_folder)
-			print('Writing folder {}'.format(c_path))
-			if not os.path.exists(c_path):
-				os.makedirs(c_path)
-			for file in cluster_dic[key]:
-				if '/' in file or file==' ': # stop condition in the list (data other than filenames are stored after the string containing '/')
-					break
-				if len(file)>0:
-					filename = os.path.join(PDF_PATH,file+'.pdf')
-					new_filename = os.path.join(c_path,file+'.pdf')
-					shutil.copy2(filename,new_filename)
-		console_message = 'Classification done. Files written in {}'.format(CLASSIF_PATH)
+		return 'No classification found. Please run the document classification. '
+
+	# Load the data from the CSV file
+	cluster_dic ={}
+	print('Loading: ',CSV_full_name)
+	with open(CSV_full_name, 'r') as csvfile:
+		clusters_table = csv.reader(csvfile, delimiter=',')
+		for row in clusters_table:
+			key = row[0]
+			cluster_dic[key] = row[1:]
+	# copy classified the files in folders
+	for key in cluster_dic.keys():
+		c_folder = 'cluster_'+str(key)
+		c_path = os.path.join(CLASSIF_PATH,c_folder)
+		print('Writing folder {}'.format(c_path))
+		if not os.path.exists(c_path):
+			os.makedirs(c_path)
+		for file in cluster_dic[key]:
+			if '\\' in file or file==' ': # stop condition in the list (data other than filenames are stored after the string containing '\')
+				break
+			if len(file)>0:
+				rel_path,short_name = os.path.split(file)
+				filename = os.path.join(PDF_PATH,file+'.pdf')
+				new_filename = os.path.join(c_path,short_name+'.pdf')
+				shutil.copy2(filename,new_filename)
+	console_message = 'Classification done. Files written in {}'.format(CLASSIF_PATH)
 	return console_message
 
 def make_search(search_string,evia_paths):
