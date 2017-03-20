@@ -25,4 +25,5 @@ urlpatterns = [
 	url(r'^graphdesign/', include('graphdesign.urls')),
 	url(r'^classif/', include('classif.urls')),
 	url(r'^search/', include('search.urls')),
+	url(r'^fileupload/', include('fileupload.urls')),
 ]

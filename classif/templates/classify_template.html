@@ -52,47 +52,53 @@ function loading_run_classify() {
 <body>
 <img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
 <h1>Classification des documents</h1>
-<p>Cliquez pour lancer la classification automatique</p>
 <!------------------------------------>
-<div>
+<div class="evia">
+<div style="display: inline-block;vertical-align: top;">
+<p>Cliquez pour lancer la classification automatique</p>
 <form action="#" method="get">
-	<i class="fa fa-sitemap" aria-hidden="true"></i> <input type="submit" class="btn" value="Classify documents" name="run_classify" onclick="loading_run_classify()">
+	<i class="fa fa-sitemap fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Classify documents" name="run_classify" onclick="loading_run_classify()">
 </form>
-<div style="display: inline-block;">
-	<a href="results/"><i class="fa fa-sitemap fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
-	<p>View classification</p>
 </div>
+<div style="display: inline-block;vertical-align: top;">
+<p>Optionnel: copie des documents class&eacute;s dans des r&eacute;pertoires.</p>
+<form action="#" method="get">
+	<i class="fa fa-folder-o fa-border" aria-hidden="true"></i><input type="submit" class="btn" value="Classification into folders" name="classify_in_folders">
+</form>
 </div>
+<div style="display: inline-block;vertical-align: top;">
+<p>Voir messages</p>
+<a href="outputs/" target="_blank"><i class="fa fa-list-alt fa-2x fa-border" aria-hidden="true" style=" vertical-align: middle;"></i></a> 
+<p>Show outputs</p>
+</div>
+<!---------------------------------------->
 <div id="loading_run_classify" style="visibility: hidden;">
 <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
 <span class="sr-only">Processing...</span>
 Processing... Please wait. <a href="outputs/" target="_blank">Show outputs</a>.
 </div>
 <!------------------------------------>
-<p>Optionnel: copie des documents class&eacute;s dans des r&eacute;pertoires.</p>
-<div>
-<form action="#" method="get">
-	<input type="submit" class="btn" value="Classification into folders" name="classify_in_folders">
-</form>
-</div>
+
+<p><b> Messages: {{ console_message }}</b></p>
 <!------------------------------------>
 <h2>Analyse des r&eacute;sultats</h2>
-<div id="next_step" style="display: inline-block;" >
-	<a href="../graphdesign/"><i class="fa fa-arrow-circle-left fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
-	<p>Go back to the graph design</p>
-</div>
 <div style="display: inline-block;">
-	<a href="results/"><i class="fa fa-sitemap fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
-	<p>View classification</p>
-</div>
-<div style="display: inline-block;">
-	<a href="../search"><i class="fa fa-search fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<a href="../search"><i class="fa fa-search fa-3x fa-border" aria-hidden="true" style="vertical-align: middle;"></i></a>
 	<p>Search text in the documents</p>
 </div>
 <div style="display: inline-block;">
-	<a href="../"><i class="fa fa-home fa-3x" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<a href="results/"><i class="fa fa-sitemap fa-3x fa-border" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<p>View classification</p>
+</div>
+<h2>Navigation</h2>
+<div id="next_step" style="display: inline-block;" >
+	<a href="../graphdesign/"><i class="fa fa-arrow-circle-left fa-3x fa-border" aria-hidden="true" style="vertical-align: middle;"></i></a>
+	<p>Go back to the graph design</p>
+</div>
+
+<div style="display: inline-block;">
+	<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true" style="vertical-align: middle;"></i></a>
 	<p>Main menu</p>
 </div>
-<p><b> Messages: {{ console_message }}</b></p>
-<a href="outputs/" target="_blank">Show outputs</a>
+</div>
 </body>

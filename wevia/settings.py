@@ -15,6 +15,10 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Path where the uploaded files are saved (empty string is BASE_DIR)
+MEDIA_ROOT = ''
+UPLOAD_PATH = 'weviana/files/%Y/%m/%d' # relative path from MEDIA_ROOT
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -42,6 +46,7 @@ INSTALLED_APPS = [
     'graphdesign',
     'classif',
     'search',
+    'fileupload',
 ]
 
 MIDDLEWARE = [
@@ -125,7 +130,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     BASE_DIR + '/static/',
+    BASE_DIR + '/fileupload/static/',
 )
 
 # Path where to find the pdfs
 PDF_PATH =  '/mount/data'
+PDF_PATH =  '/media/benjamin/Largo/testspdfs'

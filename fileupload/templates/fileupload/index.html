@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Upload files and folders</title>
+		{% load staticfiles %}
+		<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+		<link href="{% static 'fileupload/basic.min.css' %}" type="text/css" rel="stylesheet"/>
+		<link href="{% static 'fileupload/dropzone.min.css' %}" type="text/css" rel="stylesheet"/>
+	</head>
+	<body>
+		<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
+		<h1>Add files</h1>
+		<div class="evia">
+		<p>Click on the box below or drag and drop files and folders in it. You may put entire folders as the files are filtered and only pdf files are loaded. These files will be analysed by Weviana.</p>
+		<!-- IMPORTANT enctype attribute! -->
+		<form class="dropzone" action="{% url "fileupload" %}" method="post" enctype="multipart/form-data" id="myDropzone">
+			{% csrf_token %}
+		</form>
+ 		<div id="output"> {{ message }}</div>
+
+		<div style="margin: 15px;">
+				<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true"></i></a>
+				<p>Main page</p>
+		</div>
+		</div>
+		<script src="{% static 'fileupload/dropzone.min.js' %}"></script>
+		<script type="text/javascript">
+			Dropzone.options.myDropzone = {
+				// Prevents Dropzone from uploading files that are not pdf  
+				acceptedFiles: "application/pdf",
+ 
+				init : function() {
+					//dropzone listeners can be added here 
+					this.on("addedfile", function(file) {
+						if (this.files.length) {
+							var _i, _len;
+							for (_i = 0, _len = this.files.length; _i < _len - 1; _i++) // -1 to exclude current file
+							{
+								if(this.files[_i].name === file.name && this.files[_i].size === file.size && this.files[_i].lastModifiedDate.toString() === file.lastModifiedDate.toString()){
+									this.removeFile(file);
+								}
+							console.log(file.name + " processed.")
+							}
+						}
+					}); 			
+				}
+			};
+		</script>
+	</body>
+</html>

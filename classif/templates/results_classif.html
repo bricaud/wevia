@@ -1,6 +1,17 @@
+<head>
+	<title>Evia search</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+</head>
+<body>
 <img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
 <h1>CLASSIFICATION RESULTS</h1>
-
+<div class="evia">
+<div style="display: inline-block;vertical-align: top;">
+		<a href="../"><i class="fa fa-home fa-border" aria-hidden="true"></i></a>
+</div>
 <p>{{ console_message }}</p>
 <table style="border-collapse: collapse;">
 	{% for key,value in csv_table.items %}
@@ -32,3 +43,5 @@
 	{% endfor %}
 </table>
 -->
+</div>
+</body>

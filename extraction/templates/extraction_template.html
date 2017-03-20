@@ -53,22 +53,29 @@ function loading_pdf2txt() {
 <body>
 <img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
 <h1>Extraction du texte</h1>
+<div class="evia">
 <p>Cliquez pour lancer le processus d'extraction de texte</p>
 <!------------------------------------>
 <div>
 <form action="#" method="get">
-	<i class="fa fa-file-text-o" aria-hidden="true"></i> <input type="submit" class="btn" value="Run pdf2txt" id="run" name="run_pdf2txt" onclick="loading_pdf2txt()">
+	<i class="fa fa-file-text-o fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Run pdf2txt" id="run" name="run_pdf2txt" onclick="loading_pdf2txt()">
 </form>
+<p>Weviana va rechercher les fichiers pdf dans le dossier "Documents" et extraire le texte. Ceci est le comportement par défaut. Si vous désirez ajouter d'autres fichiers ou dossiers, <a href="../fileupload/">suivez ce lien</a>.</p>
 </div>
 <div id="loading_pdf2txt" style="visibility: hidden;">
 <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
 <span class="sr-only">Loading...</span>
 Loading... Please wait. See more info on <a href="outputs/" target="_blank">Show outputs</a>
 </div>
-<a href="outputs/" target="_blank">Show outputs</a>
-<div id="next_step" >
- <a href="../graphdesign/"><i class="fa fa-arrow-circle-right fa-3x" aria-hidden="true" style=" vertical-align: middle;"></i>
-Go to the next step</a>. Design the graph of words.
+<div>
+<a href="outputs/" target="_blank"><i class="fa fa-list-alt fa-2x fa-border" aria-hidden="true" style=" vertical-align: middle;"></i></a> 
+<p>Show outputs</p>
 </div>
 <p><b> Messages: {{ console_message }}</b></p>
+<h2>Navigation</h2>
+<div  >
+ <a href="../graphdesign/"><i class="fa fa-arrow-circle-right fa-3x fa-border" aria-hidden="true" style=" vertical-align: middle;"></i></a>
+<p>Go to the next step<br>Design the graph of words</p>
+</div>
+</div>
 </body>

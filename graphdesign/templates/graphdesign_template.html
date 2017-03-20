@@ -52,13 +52,15 @@ function loading_make_graph() {
 <body>
 <img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
 <h1>Creation du graphe de mots</h1>
+<div class="evia">
 <p>Cliquez pour lancer la construction du graphe</p>
 <!------------------------------------>
 <div>
 <form action="#" method="get">
-	<i class="fa fa-share-alt" aria-hidden="true"></i> <input type="submit" class="btn" value="Make the graph" name="make_graph" onclick="loading_make_graph()">
+	<i class="fa fa-share-alt fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Make the graph" name="make_graph" onclick="loading_make_graph()">
 	Threshold value: <input type="number" value="{{ graph_threshold }}" name="graph_threshold" size="1" min="2" max="20"/>
 </form>
+<p> The threshold value provides a compromise between accuracy of the classification and computation time. It can take values between 2 and 20. The larger, the faster to compute. For a good classification, a value between 2 and 8 is recommended.</p>
 </div>
 <div id="loading_make_graph" style="visibility: hidden;">
 <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
@@ -68,16 +70,20 @@ Loading... Please wait. <a href="outputs/" target="_blank">Show outputs</a>.
 
 <a href="outputs/" target="_blank">Show outputs</a>
 <p><b> Console: {{ console_message }}</b></p>
-<div id="next_step" >
- <a href="../extraction/"><i class="fa fa-arrow-circle-left fa-3x" aria-hidden="true" style="vertical-align: middle;"></i>
-Go to the previous step</a>. Text extraction.
-</div>
-<div id="next_step" >
- <a href="../classif/"><i class="fa fa-arrow-circle-right fa-3x" aria-hidden="true" style="vertical-align: middle;"></i>
-Go to the next step</a>. Text analysis and classification of the documents.
-</div>
-<div>
-	<a href="../"><i class="fa fa-home fa-3x" aria-hidden="true" style="vertical-align: middle;"></i>
-	Main menu</a>
+<h2>Navigation</h2>
+<p style="text-align: center;">
+	<div style="display: inline-block;vertical-align: top;">
+	 <a href="../extraction/"><i class="fa fa-arrow-circle-left fa-3x fa-border" aria-hidden="true" ></i></a>
+	<p>Go to the previous step<br> Text extraction</p>
+	</div>
+	<div style="display: inline-block;vertical-align: top;">
+		<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true"></i></a>
+		<p>Main menu</p>
+	</div>
+	<div  style="display: inline-block;vertical-align: top;">
+	 <a href="../classif/"><i class="fa fa-arrow-circle-right fa-3x fa-border" aria-hidden="true" ></i></a>
+	<p>Go to the next step<br>Analysis and classification.</p>
+	</div>
+</p>
 </div>
 </body>
