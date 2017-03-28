@@ -137,6 +137,7 @@ STATICFILES_DIRS = (
 
 # Path where the uploaded files are saved (empty string is BASE_DIR)
 MEDIA_ROOT = BASE_DIR + '/data/'
+MEDIA_URL = "data/"
 PDF_PATH = MEDIA_ROOT
 UPLOAD_PATH = 'weviana/files/%Y/%m/%d' # relative path from MEDIA_ROOT
 
