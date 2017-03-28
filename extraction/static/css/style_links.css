@@ -1,0 +1,8 @@
+
+a:link, a:visited {
+    color: blue;
+}
+
+a:hover, a:active {
+    color: #87CEFA;
+}
