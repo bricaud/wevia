@@ -2,6 +2,7 @@
 import os
 import sys
 import csv
+from itertools import permutations
 import shutil
 sys.path.append('../OCR')
 sys.path.append('./OCR')
@@ -10,6 +11,9 @@ import pdf2txtbox
 import textbox
 import txt2graph
 
+from graphdesign.models import GraphNode, DocumentIndex
+from fileupload.models import Document
+from classif.models import Cluster
 
 class EviaPaths():
 
@@ -53,7 +57,7 @@ def check_files(files_list):
 
 
 def run_pdf2txt(evia_paths):
-	""" Extract the text in the the pdf files """
+	""" Extract the text in the pdf files of the PDF_PATH """
 	PDF_PATH = evia_paths.PDF_PATH
 	LOGS_PATH = evia_paths.LOGS_PATH
 	PNG_PATH = evia_paths.PNG_PATH
@@ -64,6 +68,35 @@ def run_pdf2txt(evia_paths):
 	print('Computation done. Texts extracted.')
 	return 'Computation done. Texts extracted.' + '\n' + output_message
 
+
+def run_singlefile_pdf2txt(pdf_file,evia_paths):
+	""" Extract the text of a pdf file filename """
+	PDF_PATH = evia_paths.PDF_PATH
+	PNG_PATH = evia_paths.PNG_PATH
+	TXT_PATH = evia_paths.TXT_PATH
+	full_path,filename = os.path.split(pdf_file)
+	# keeping the relative path
+	rel_path =os.path.relpath(full_path,PDF_PATH)
+	print('Running singlefile_pdf2txt on',filename)
+	file_data, output_message = pdf2txtbox.singlefile_pdf2txt(filename,rel_path,full_path,PNG_PATH,TXT_PATH)
+	print('Computation done. Texts extracted.')
+	return file_data,'Computation done. Texts extracted.' + '\n' + output_message
+
+
+def run_singlefile_textextract(pdf_file,evia_paths):
+	file_data,message = run_singlefile_pdf2txt(pdf_file,evia_paths)
+	if file_data['error']:
+		return file_data,message
+	nb_of_pages = file_data['nb_pages']
+	txt_path = file_data['txtpath']
+	short_name = file_data['name']
+	txt_short_filename = os.path.join(txt_path,short_name)
+	full_text,error_code = textbox.singlepdf_extract_text(txt_short_filename,nb_of_pages)
+	file_data['text'] = full_text
+	file_data['error_in_txt'] = error_code
+	if error_code:
+		message = message + ' Error occured during extraction of text.'
+	return file_data,message
 
 def make_graph(graph_threshold,evia_paths):
 	TXT_PATH = evia_paths.TXT_PATH
@@ -84,6 +117,31 @@ def make_graph(graph_threshold,evia_paths):
 		console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME)
 	return console_message
 
+def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths):
+	GRAPH_NAME = evia_paths.GRAPH_NAME
+	if not db_entries_dic:
+		print('empty database!')
+		return 'empty database!'
+	print('Making the graph...')
+	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
+	print('Graph saved in file {}'.format(GRAPH_NAME))
+	print('Saving nodes in database...')
+	message_db = save_nodes_in_db(node_dic)
+	console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME) + '\n' + message_db
+	return console_message
+
+def save_nodes_in_db(node_dic):
+	for node in node_dic.keys():
+		new_node = GraphNode.objects.create(name=node)
+		if 'paths' in node_dic[node]:
+			for document_id in node_dic[node]['paths'].keys():
+				doc = Document.objects.get(id=document_id)
+				print(doc)
+				doc_index = DocumentIndex(document=doc, graphnode=new_node)
+				doc_index.load_list(node_dic[node]['paths'][document_id]['word_positions'])
+				doc_index.save()
+	return 'Nodes saved in DB.'
+
 def run_classify(evia_paths):
 	CSV_full_name = evia_paths.CSV_full_name
 	TXT_PICKLE = evia_paths.TXT_PICKLE
@@ -102,6 +160,37 @@ def run_classify(evia_paths):
 		txt2graph.doc_classif(GRAPH_NAME,TXT_PICKLE,EX_TXT_PICKLE,CSV_full_name)
 		console_message = 'CSV file containing the classification saved in {}'.format(CSV_full_name)
 	return console_message
+
+def run_classify_db(evia_paths):
+	CSV_full_name = evia_paths.CSV_full_name
+	GRAPH_NAME = evia_paths.GRAPH_NAME
+	if not os.path.isfile(GRAPH_NAME):
+		print('No graph found. Please construct the graph first. ')
+		return 'No graph found. Please construct the graph first. '
+	document_index_dic = {}
+	for document in Document.objects.all():
+		document_index_dic[document.id] = {}
+		document_index_dic[document.id]['name'] = document.name
+		if os.path.isfile(document.file.path):
+			document_index_dic[document.id]['path'] = document.file.path
+
+	clusters_dic = txt2graph.doc_classif_db(GRAPH_NAME,document_index_dic,CSV_full_name)
+	save_classif_in_db(clusters_dic)
+	return 'CSV file containing the classification saved in {}'.format(CSV_full_name)
+
+def save_classif_in_db(clusters_dic):
+	for key in clusters_dic.keys():
+		c_docids = clusters_dic[key]['doc_ids']
+		c_shared_words = clusters_dic[key]['shared_words']
+		new_cluster = Cluster(name='Cluster_'+str(key), confidence= (clusters_dic[key]['density']*100))
+		new_cluster.load_sharedWords(c_shared_words)
+		new_cluster.save()
+		# link to the documents
+		for doc_id in c_docids:
+			document = Document.objects.get(pk=doc_id)
+			document.cluster = new_cluster
+			document.save()
+
 
 def get_csv(evia_paths):
 	# loading the CSV file into a dict of clusters
@@ -208,3 +297,32 @@ def make_search(search_string,evia_paths):
 					data_dic[node] = {}
 		console_message = 'Search results:'
 	return data_dic,console_message
+
+def make_search_db(search_string):
+
+	word_list = search_string.split()
+	total_results = []
+	for permlist in permutations(word_list,len(word_list)):
+		sentence = '_'.join(permlist)
+		print('searching ',sentence)
+		search_results = GraphNode.objects.filter(name__icontains=sentence)
+		[total_results.append(item) for item in search_results]
+	data_dic = {}
+	for result in total_results:
+		node = result.name
+		data_dic[node] = {}
+		documents_list = DocumentIndex.objects.filter(graphnode=result)
+		for node_doc in documents_list:
+			document_id = node_doc.document.id
+			doc_name = node_doc.document.name
+			doc_text = node_doc.document.text
+			docindices = node_doc.get_list()
+			list_of_positions = docindices
+			text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
+			data_dic[node][document_id] = {}
+			data_dic[node][document_id]['name'] = doc_name
+			data_dic[node][document_id]['word_positions'] = list_of_positions
+			data_dic[node][document_id]['text'] = text_around
+	console_message = 'Search results:'
+	return data_dic,console_message
+

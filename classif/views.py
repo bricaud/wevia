@@ -3,8 +3,12 @@ import commands.eviascripts as cevia
 import sys
 from contextlib import redirect_stdout 
 import io 
+import os
 from django.conf import settings
+from classif.models import Cluster
+from fileupload.models import Document
 PDF_PATH = settings.PDF_PATH
+
 
 stdoutstream = io.StringIO()
 
@@ -27,7 +31,7 @@ def run_classify(paths_objects):
 	global stdoutstream
 	print('Running classification.')
 	with redirect_stdout(stdoutstream):
-		output = cevia.run_classify(paths_objects)
+		output = cevia.run_classify_db(paths_objects)
 	return output
 
 def classify_in_folders(paths_object):
@@ -50,7 +54,28 @@ def request_display_csv(request):
 	evia_paths = cevia.EviaPaths(PDF_PATH)
 	csv_table,console_message = get_csv(evia_paths)
 	print(console_message)
-	return render(request,'results_classif.html',{'csv_table' : csv_table, 'console_message' : console_message})
+	#return render(request,'results_classif.html',{'csv_table' : csv_table, 'console_message' : console_message})
+	return render(request,'results_classif.html',{'csv_table' : sorted(csv_table.items()),
+		'pdf_path' : PDF_PATH,  'console_message' : console_message})
+
+def request_display_classif(request):
+	global MEDIA_ROOT
+	clusters = Cluster.objects.all()
+	cluster_dic = {}
+	clusters_info_dic = {}
+	for cluster in clusters:
+		doc_list = []
+		cluster_dic[cluster.name] = {}
+		clusters_info_dic[cluster.name] = {}
+		c_documents = Document.objects.filter(cluster=cluster)
+		cluster_dic[cluster.name]['confidence'] = '{}%'.format(cluster.confidence)#'{.0f}%'.format(cluster.confidence*100)
+		clusters_info_dic[cluster.name]['shared_words'] = cluster.get_sharedWords()
+		#url = os.path.join(settings.MEDIA_ROOT,doc.file.url)
+		[doc_list.append((doc.name,'file://' + os.path.join(settings.MEDIA_ROOT,doc.file.url))) for doc in c_documents]
+		cluster_dic[cluster.name]['doc_list'] = doc_list
+	#return render(request,'results_classif.html',{'csv_table' : csv_table, 'console_message' : console_message})
+	return render(request,'results_classif.html',{'csv_table' : sorted(cluster_dic.items()), 
+		'clusters_info' : sorted(clusters_info_dic.items())})
 
 def get_csv(paths_object):
 	global stdoutstream

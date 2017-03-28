@@ -14,30 +14,52 @@
 </div>
 <p>{{ console_message }}</p>
 <table style="border-collapse: collapse;">
-	{% for key,value in csv_table.items %}
+	{% for key,value in csv_table %}
 	<tr> 
-		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ key }}</td>
-		{% for item in value %}
-		{% if "\\" in item %}
-		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ item }}</td>
-		{% else %}
-		<td style="border: 1px solid black; padding: 5px;">{{ item }}</td>
-		{% endif %}
+		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">
+			<a name="{{ key }}"></a>
+			<a href="#{{ key }}_info">{{ key }}</a> <BR> Cfdce:&nbsp;{{ value.confidence }}
+		</td>
+
+		{% for item in value.doc_list %}
+			<td style="border: 1px solid black; padding: 5px;"><a href="{{ item.1 }}"> {{ item.0 }} </a></td>
 		{% endfor %}
+
 	</tr>
 	{% endfor %}
 </table>
+<p>Table with details of clusters (shared words in the documents of the each clusters).</p>
+
+
+<!-------- INFO TABLE ---------------------------->
+<table style="border-collapse: collapse;">
+	{% for key,value in clusters_info %}
+	<tr> 
+		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">
+			<a name="{{ key }}_info"></a>
+			<a href="#{{ key }}">{{ key }}</a>
+		</td>
+
+		{% for item in value.shared_words %}
+			<td style="border: 1px solid black; padding: 5px;">{{ item }} </td>
+		{% endfor %}
+
+	</tr>
+	{% endfor %}
+</table>
+
+
 <!--
 <table style="border-collapse: collapse;">
-	{% for key,value in csv_table.items %}
+	{% for key,value in csv_table %}
 	<tr> 
 		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ key }}</td>
 		{% for item in value %}
-		{% if "/" in item %}
-		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ item }}</td>
-		{% else %}
-		<td style="border: 1px solid black; padding: 5px;">{{ item }}</td>
-		{% endif %}
+			{% if "\\" in item %}
+				<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;"> {{ item }} </td>
+			{% else %}
+				<td style="border: 1px solid black; padding: 5px;"><a href="file://{{ pdf_path }}/{{ item }}.pdf"> {{ item }} </a></td>
+			{% endif %}
 		{% endfor %}
 	</tr>
 	{% endfor %}

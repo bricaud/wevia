@@ -25,7 +25,7 @@ def index(request):
 
 def make_search(searchquery,paths_object):
 	print('starting the search, keyword: {}'.format(searchquery))	
-	search_results,console_message = cevia.make_search(searchquery,paths_object)
+	search_results,console_message = cevia.make_search_db(searchquery)#,paths_object)
 	print(console_message)
 	return search_results,console_message
 	
