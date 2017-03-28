@@ -10,8 +10,8 @@ class GraphNode(models.Model):
 		ordering = ('name',)
 
 class DocumentIndex(models.Model):
-	document = models.ForeignKey(Document, on_delete=models.PROTECT)
-	graphnode = models.ForeignKey(GraphNode, on_delete=models.PROTECT)
+	document = models.ForeignKey(Document, on_delete=models.CASCADE)
+	graphnode = models.ForeignKey(GraphNode, on_delete=models.CASCADE)
 	positions_in_document = models.CharField(validators=[validators.validate_comma_separated_integer_list], max_length=2048)
 
 	def load_list(self,list_to_load):

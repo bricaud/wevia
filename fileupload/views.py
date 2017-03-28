@@ -31,11 +31,15 @@ def index(request):
 		form = UploadFileForm(request.POST, request.FILES)
 		if form.is_valid():
 			(root,ext) = os.path.splitext(request.FILES['file'].name)
+			# Check if the file is already recorded (check name and size)
 			same_name_entries = Document.objects.filter(name=root)
-			same_size = [item for item in same_name_entries if item.file.size==request.FILES['file'].size]
 			if not same_name_entries:
 				process_file(request.FILES['file'],root,evia_paths)
-			else:	
+			else:
+				same_size = []
+				for item in same_name_entries:
+					if os.path.isfile(item.file.path) and item.file.size==request.FILES['file'].size:
+						same_size.append(item)	
 				if not same_size:
 					#[item.delete() for item in same_name_entries]
 					process_file(request.FILES['file'],root,evia_paths)

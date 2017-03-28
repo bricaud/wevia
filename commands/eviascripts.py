@@ -2,6 +2,7 @@
 import os
 import sys
 import csv
+import warnings
 from itertools import permutations
 import shutil
 sys.path.append('../OCR')
@@ -173,8 +174,13 @@ def run_classify_db(evia_paths):
 		document_index_dic[document.id]['name'] = document.name
 		if os.path.isfile(document.file.path):
 			document_index_dic[document.id]['path'] = document.file.path
-
+		else:
+			document_index_dic[document.id]['path'] = ''
+			warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
+				' You may need to clean the database.')
+			warnings.warn(warnMessage)
 	clusters_dic = txt2graph.doc_classif_db(GRAPH_NAME,document_index_dic,CSV_full_name)
+	Cluster.objects.all().delete()
 	save_classif_in_db(clusters_dic)
 	return 'CSV file containing the classification saved in {}'.format(CSV_full_name)
 
