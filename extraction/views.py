@@ -1,14 +1,19 @@
 from django.shortcuts import render
 import commands.eviascripts as cevia
-import sys
-from contextlib import redirect_stdout 
-import io 
+#import sys
+#from contextlib import redirect_stdout 
+#import io 
 from django.conf import settings
-PDF_PATH = settings.PDF_PATH
+#PDF_PATH = settings.PDF_PATH
+#stdoutstream = io.StringIO()
 
-stdoutstream = io.StringIO()
-#PDF_PATH = '/media/benjamin/Largo/testspdfs'
 
+
+def index(request):
+	output = ''
+	return render(request,'installstep.html',
+		{'console_message' :output})
+"""
 def index(request):
 	global PDF_PATH
 	num_var = 0
@@ -19,7 +24,6 @@ def index(request):
 		output = run_pdf2txt(evia_paths)
 	return render(request,'extraction_template.html',
 		{'console_message' :output, 'loading':'False'})
-
 
 def run_pdf2txt(paths_objects):
 	global stdoutstream
@@ -34,3 +38,4 @@ def request_output_page(request):
 	text = text.split('\n')
 	return render(request,'outputs_extract.html',{'output_messages' :text})
 	#return HttpResponse("Hello, world. You're at the commands page.")
+"""

@@ -13,17 +13,20 @@
 		<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
 		<h1>Add files</h1>
 		<div class="evia">
-		<p>Click on the box below or drag and drop files and folders in it. You may put entire folders as the files are filtered and only pdf files are loaded. These files will be analysed by Weviana.</p>
-		<!-- IMPORTANT enctype attribute! -->
-		<form class="dropzone" action="{% url "fileupload" %}" method="post" enctype="multipart/form-data" id="myDropzone">
-			{% csrf_token %}
-		</form>
- 		<div id="output"> {{ message }}</div>
-
-		<div style="margin: 15px;">
+			<p>Click on the box below or drag and drop files and folders in it. You may put entire folders as the files are filtered and only pdf files are loaded. These files will be analysed by Weviana.</p>
+			<!-- IMPORTANT enctype attribute! -->
+			<form class="dropzone" action="{% url 'fileupload' %}" method="post" enctype="multipart/form-data" id="myDropzone">
+				{% csrf_token %}
+			</form>
+ 			<div id="output"> {{ message }}</div>
+			<div style="margin: 15px;display: inline-block;width: 200px">
+				<a href="../extraction/"><i class="fa fa-tasks fa-3x fa-border" aria-hidden="true"></i></a>
+				<p>Back to installation</p>
+			</div>
+			<div style="margin: 15px;display: inline-block;width: 200px">
 				<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true"></i></a>
 				<p>Main page</p>
-		</div>
+			</div>
 		</div>
 		<script src="{% static 'fileupload/dropzone.min.js' %}"></script>
 		<script type="text/javascript">
