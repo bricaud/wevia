@@ -26,4 +26,5 @@ urlpatterns = [
 	url(r'^classif/', include('classif.urls')),
 	url(r'^search/', include('search.urls')),
 	url(r'^fileupload/', include('fileupload.urls')),
+	url(r'^advancedsettings/', include('advancedSettings.urls')),
 ]

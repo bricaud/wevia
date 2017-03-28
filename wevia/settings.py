@@ -15,9 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Path where the uploaded files are saved (empty string is BASE_DIR)
-MEDIA_ROOT = ''
-UPLOAD_PATH = 'weviana/files/%Y/%m/%d' # relative path from MEDIA_ROOT
 
 
 # Quick-start development settings - unsuitable for production
@@ -47,6 +44,7 @@ INSTALLED_APPS = [
     'classif',
     'search',
     'fileupload',
+    'advancedSettings',
 ]
 
 MIDDLEWARE = [
@@ -134,5 +132,12 @@ STATICFILES_DIRS = (
 )
 
 # Path where to find the pdfs
-PDF_PATH =  '/mount/data'
-PDF_PATH =  '/media/benjamin/Largo/testspdfs'
+#PDF_PATH =  '/mount/data'
+#PDF_PATH =  '/media/benjamin/Largo/testspdfs'
+
+# Path where the uploaded files are saved (empty string is BASE_DIR)
+MEDIA_ROOT = BASE_DIR + '/data/'
+PDF_PATH = MEDIA_ROOT
+UPLOAD_PATH = 'weviana/files/%Y/%m/%d' # relative path from MEDIA_ROOT
+
+

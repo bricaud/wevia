@@ -1,0 +1,36 @@
+<head>
+	<title>Evia</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+</head>
+<body>
+<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
+<h1>Options avanc&eacute;es</h1>
+<div class="evia">
+<p>Options avanc&eacute;es de Weviana. </p>
+<p style="text-align: center;">
+	<div>	
+	<form action="#" method="get">
+		<i class="fa fa-search fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Check the database" name="check_db"> V&eacute;rifier la base de donn&eacute;es
+	</form>
+	</div>
+	<div>	
+	<form action="#" method="get">
+		<i class="fa fa-shower fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Clean the database" name="clean_db"> Nettoyage de la base de donn&eacute;es
+	</form>
+	</div>
+	<div>
+	<form action="#" method="get">
+		<i class="fa fa-eraser fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Erase the database" name="erase_db"> Effacement de la base de donn&eacute;es
+	</form>
+	</div>
+</p>
+</div>
+<div style="display: inline-block;vertical-align: top;">
+		<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true"></i></a>
+		<p>Retour au menu</p>
+</div>
+<p>{{ console_message }}</p>
+</body>
