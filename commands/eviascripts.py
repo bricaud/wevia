@@ -320,15 +320,20 @@ def make_search_db(search_string):
 		documents_list = DocumentIndex.objects.filter(graphnode=result)
 		for node_doc in documents_list:
 			document_id = node_doc.document.id
-			doc_name = node_doc.document.name
 			doc_text = node_doc.document.text
-			docindices = node_doc.get_list()
-			list_of_positions = docindices
+			list_of_positions = node_doc.get_list()
 			text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
 			data_dic[node][document_id] = {}
-			data_dic[node][document_id]['name'] = doc_name
+			data_dic[node][document_id]['name'] = node_doc.document.name
 			data_dic[node][document_id]['word_positions'] = list_of_positions
 			data_dic[node][document_id]['text'] = text_around
+			data_dic[node][document_id]['cluster'] = node_doc.document.cluster.name
+			if os.path.isfile(node_doc.document.file.path):
+				data_dic[node][document_id]['url'] = node_doc.document.file.url
+			else:
+				warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(node_doc.document.name) +
+				' You may need to clean the database.')
+				warnings.warn(warnMessage)
 	console_message = 'Search results:'
 	return data_dic,console_message
 

@@ -1,17 +1,11 @@
 from django.shortcuts import render
 import commands.eviascripts as cevia
-import sys
-from contextlib import redirect_stdout 
-import io 
-from django.conf import settings
-PDF_PATH = settings.PDF_PATH
 
-stdoutstream = io.StringIO()
+from django.conf import settings
 
 
 def index(request):
-	global PDF_PATH
-	evia_paths = cevia.EviaPaths(PDF_PATH)
+	evia_paths = cevia.EviaPaths(settings.PDF_PATH)
 	searchquery = ''
 	search_results = {}
 	console_message = ''	
@@ -30,8 +24,7 @@ def make_search(searchquery,paths_object):
 	return search_results,console_message
 	
 def request_search_results(request):
-	global PDF_PATH
-	evia_paths = cevia.EviaPaths(PDF_PATH)
+	evia_paths = cevia.EviaPaths(settings.PDF_PATH)
 	searchquery = ''
 	search_results = {}
 	console_message = ''	
