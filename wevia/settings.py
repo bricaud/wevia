@@ -14,7 +14,8 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+DATA_SUBFOLDER = 'data/'
+DATA_DIR = os.path.join(BASE_DIR,DATA_SUBFOLDER)
 
 
 # Quick-start development settings - unsuitable for production
@@ -84,7 +85,8 @@ WSGI_APPLICATION = 'wevia.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
     }
 }
 
@@ -136,8 +138,8 @@ STATICFILES_DIRS = (
 #PDF_PATH =  '/media/benjamin/Largo/testspdfs'
 
 # Path where the uploaded files are saved (empty string is BASE_DIR)
-MEDIA_ROOT = BASE_DIR + '/data/'
-MEDIA_URL = "data/"
+MEDIA_ROOT = DATA_DIR
+MEDIA_URL = DATA_SUBFOLDER
 PDF_PATH = MEDIA_ROOT
 UPLOAD_PATH = 'weviana/files/%Y/%m/%d' # relative path from MEDIA_ROOT
 
