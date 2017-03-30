@@ -11,6 +11,7 @@ sys.path.append('./OCR')
 import pdf2txtbox
 import textbox
 import txt2graph
+import tqdm
 
 from graphdesign.models import GraphNode, DocumentIndex
 from fileupload.models import Document
@@ -132,6 +133,9 @@ def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths):
 	return console_message
 
 def save_nodes_in_db(node_dic):
+	nb_nodes = len(node_dic)
+	# Progess bar
+	pbar = tqdm.tqdm(total=nb_nodes)
 	for node in node_dic.keys():
 		new_node = GraphNode.objects.create(name=node)
 		if 'paths' in node_dic[node]:
@@ -141,6 +145,8 @@ def save_nodes_in_db(node_dic):
 				doc_index = DocumentIndex(document=doc, graphnode=new_node)
 				doc_index.load_list(node_dic[node]['paths'][document_id]['word_positions'])
 				doc_index.save()
+		pbar.update(1)
+	pbar.close()
 	return 'Nodes saved in DB.'
 
 def run_classify(evia_paths):
@@ -185,10 +191,11 @@ def run_classify_db(evia_paths):
 	return 'CSV file containing the classification saved in {}'.format(CSV_full_name)
 
 def save_classif_in_db(clusters_dic):
+	pbar = tqdm.tqdm(total=len(clusters_dic))
 	for key in clusters_dic.keys():
 		c_docids = clusters_dic[key]['doc_ids']
 		c_shared_words = clusters_dic[key]['shared_words']
-		new_cluster = Cluster(name='Cluster_'+str(key), confidence= (clusters_dic[key]['density']*100))
+		new_cluster = Cluster(name='Cluster_'+str(key), number=int(key), confidence=(clusters_dic[key]['density']*100))
 		new_cluster.load_sharedWords(c_shared_words)
 		new_cluster.save()
 		# link to the documents
@@ -196,7 +203,8 @@ def save_classif_in_db(clusters_dic):
 			document = Document.objects.get(pk=doc_id)
 			document.cluster = new_cluster
 			document.save()
-
+		pbar.update(1)
+	pbar.close()
 
 def get_csv(evia_paths):
 	# loading the CSV file into a dict of clusters
@@ -327,7 +335,12 @@ def make_search_db(search_string):
 			data_dic[node][document_id]['name'] = node_doc.document.name
 			data_dic[node][document_id]['word_positions'] = list_of_positions
 			data_dic[node][document_id]['text'] = text_around
-			data_dic[node][document_id]['cluster'] = node_doc.document.cluster.name
+			try:
+				data_dic[node][document_id]['cluster'] = node_doc.document.cluster.number
+			except:
+				print('Warning: document {} does not belong to any cluster. Please run the classification.'
+					.format(data_dic[node][document_id]['name']))
+				data_dic[node][document_id]['cluster'] = -1
 			if os.path.isfile(node_doc.document.file.path):
 				data_dic[node][document_id]['url'] = node_doc.document.file.url
 			else:

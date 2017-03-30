@@ -5,6 +5,7 @@ import json
 
 class Cluster(models.Model):
 	name = models.CharField(max_length=255, blank=True)
+	number = models.IntegerField(default=-1)
 	confidence = models.IntegerField()
 	sharedWords = models.CharField(validators=[validators.validate_comma_separated_integer_list], max_length=4096)
 

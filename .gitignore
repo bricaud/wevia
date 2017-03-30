@@ -4,3 +4,4 @@ __pycache__/*
 */migrations/0*
 *cpython*
 weviana/
+/data/db.sqlite3
