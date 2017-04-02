@@ -20,12 +20,24 @@ def index(request):
 		{'console_message' :output})
 
 def run_check_db():
-	clusters = Cluster.objects.all()
+	try:
+		clusters = Cluster.objects.all()
+	except:
+		print("Database corrupted (can't access 'Cluster' object). Please re-install.")
+		return "Database corrupted (can't access 'Cluster' object). Please re-install."
 	nb_clusters = len(clusters)
-	expressions = GraphNode.objects.all()
+	try:
+		expressions = GraphNode.objects.all()
+	except:
+		print("Database corrupted (can't access 'GraphNode' object). Please re-install.")
+		return "Database corrupted (can't access 'GrpahNode' object). Please re-install."
 	nb_expressions = len(expressions)
-	# Delete only documents that are not associeted to a file: 
-	document_set = Document.objects.all()
+	# Delete only documents that are not associated to a file:
+	try: 
+		document_set = Document.objects.all()
+	except:
+		print("Database corrupted (can't access 'Document' object). Please re-install.")
+		return "Database corrupted (can't access 'Document' object). Please re-install."
 	nb_documents = len(document_set)
 	doc_no_file = 0
 	for doc in document_set:
