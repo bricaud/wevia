@@ -1,0 +1,83 @@
+<head>
+	<title>Evia search</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+			<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
+
+</head>
+<body>
+<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
+<h1>Document in the database</h1>
+<div class="evia">
+
+	{% if document %}
+	<form action="../dbmodif/" method="get">
+		<input type="text" name="entryname" value="{{ document.name }}">
+		<input type="submit" class="btn" value="modify database entry" id="modif_db" name="modif_db">
+	</form>
+	<table style="border-collapse: collapse;">
+
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Name</td>
+			<td style="border: 2px solid black; background-color: {{ cluster_color }}; padding: 5px;">
+				<a href="../../{{ document.file.url }}">{{ document.name }}</a>
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Date created</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				{{ document.created }}
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Text date</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				{{ document.text_date }}
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Last modified</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				{{ document.last_modified }}
+			</td>
+		</tr>		
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Cluster</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				<a href="../../{{ document.file.url }}"> {{ document.cluster.number }}</a>
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Nb of pages</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				{{ document.nb_pages }}
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">OCR error</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				{{ document.extract_error }}
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Text extraction error</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				{{ document.txt_error }}
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Text</td>
+			<td style="border: 1px solid black; padding: 5px;">
+				{{ document.text }}
+			</td>
+		</tr>
+
+	</table>
+	{% else %}
+		<p> {{ query }} not found.</p>
+	{% endif %}
+
+</div>
+</body>

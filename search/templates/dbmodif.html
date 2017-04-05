@@ -1,0 +1,38 @@
+<head>
+	<title>Evia search</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+			<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
+
+<style type="text/css">
+#id_text {
+    width: 600px;
+    height: 800px;
+}
+#id_description {
+    width: 600px;
+    height: 100px;
+}
+</style>
+
+</head>
+<body>
+<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
+<h1>Modification of document data</h1>
+<div class="evia">
+
+	<p>{{ message }}</p>
+	<p>Document name: {{ query }}</p>
+	<form action="../dbmodif/" method="post">
+	{% csrf_token %}
+	<input type="submit" class="btn" value="Submit" id="modif_db" name="modif_db">
+	<table>
+		{{ form }}
+	</table>
+	<input type="submit" class="btn" value="Submit" id="modif_db" name="modif_db">
+	</form>
+
+</div>
+</body>
