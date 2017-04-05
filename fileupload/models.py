@@ -7,6 +7,8 @@ class Document(models.Model):
 	file = models.FileField(upload_to=UPLOAD_PATH)
 	name = models.CharField(max_length=255, blank=True)
 	created = models.DateTimeField(default=timezone.now)
+	text_date = models.DateTimeField(null=True, blank=True)
+	last_modified = models.DateTimeField(null=True, blank=True)
 	description = models.CharField(max_length=255, blank=True)
 	text = models.TextField(blank=True)
 	path = models.CharField(max_length=255, blank=True)

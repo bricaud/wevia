@@ -15,5 +15,8 @@ class Cluster(models.Model):
 	def get_sharedWords(self):
 		return json.loads(self.sharedWords)
 
+	def __str__(self):
+		return 'Cluster {}'.format(self.number)
+
 	class Meta:
 		ordering = ('name',)
