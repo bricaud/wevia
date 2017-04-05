@@ -40,11 +40,14 @@ def run_check_db():
 		return "Database corrupted (can't access 'Document' object). Please re-install."
 	nb_documents = len(document_set)
 	doc_no_file = 0
+	docname_no_file = []
 	for doc in document_set:
-		if not os.path.isfile(doc.file.path):
+		if doc.file == '' or not os.path.isfile(doc.file.path):
 			doc_no_file+=1
-	return ('{} documents, {} words and expressions, {} clusters in database.'.format(nb_documents,nb_expressions,nb_clusters)+
-		' {} document(s) not associated to a file.'.format(doc_no_file))
+			docname_no_file.append(doc.name)
+	return ("""{} documents, {} words and expressions, {} clusters in database."""
+		.format(nb_documents,nb_expressions,nb_clusters)+
+		' {} document(s) not associated to a file {}.'.format(doc_no_file,docname_no_file))
 
 
 def run_clean_db():
@@ -53,7 +56,7 @@ def run_clean_db():
 	# Delete only documents that are not associeted to a file: 
 	document_set = Document.objects.all()
 	for doc in document_set:
-		if not os.path.isfile(doc.file.path):
+		if doc.file == '' or not os.path.isfile(doc.file.path):
 			doc.delete()
 	return 'Database cleaned.'
 
