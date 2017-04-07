@@ -21,24 +21,24 @@ def index(request):
 
 def run_check_db():
 	try:
-		clusters = Cluster.objects.all()
+		clusters = Cluster.objects.all() # lazy implementation (not evaluated)
+		nb_clusters = len(clusters) # needed to evaluate the line above
 	except:
 		print("Database corrupted (can't access 'Cluster' object). Please re-install.")
 		return "Database corrupted (can't access 'Cluster' object). Please re-install."
-	nb_clusters = len(clusters)
 	try:
 		expressions = GraphNode.objects.all()
+		nb_expressions = len(expressions)
 	except:
 		print("Database corrupted (can't access 'GraphNode' object). Please re-install.")
 		return "Database corrupted (can't access 'GrpahNode' object). Please re-install."
-	nb_expressions = len(expressions)
 	# Delete only documents that are not associated to a file:
 	try: 
 		document_set = Document.objects.all()
+		nb_documents = len(document_set)
 	except:
 		print("Database corrupted (can't access 'Document' object). Please re-install.")
 		return "Database corrupted (can't access 'Document' object). Please re-install."
-	nb_documents = len(document_set)
 	doc_no_file = 0
 	docname_no_file = []
 	for doc in document_set:
@@ -53,7 +53,7 @@ def run_check_db():
 def run_clean_db():
 	Cluster.objects.all().delete()
 	GraphNode.objects.all().delete()
-	# Delete only documents that are not associeted to a file: 
+	# Delete only documents that are not associated to a file: 
 	document_set = Document.objects.all()
 	for doc in document_set:
 		if doc.file == '' or not os.path.isfile(doc.file.path):
