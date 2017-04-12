@@ -279,7 +279,7 @@ def csv2folders(evia_paths):
 				shutil.copy2(filename,new_filename)
 	console_message = 'Classification done. Files written in {}'.format(CLASSIF_PATH)
 	return console_message
-
+"""
 def make_search(search_string,evia_paths):
 	GRAPH_NAME = evia_paths.GRAPH_NAME
 	TXT_PICKLE = evia_paths.TXT_PICKLE
@@ -292,8 +292,10 @@ def make_search(search_string,evia_paths):
 		console_message = 'No graph found. Please construct the graph first. '
 	else:
 		word_list = search_string.lower().split()
-		import networkx as nx
-		G = nx.read_gpickle(GRAPH_NAME)
+		#import networkx as nx
+		#G = nx.read_gpickle(GRAPH_NAME)
+		import grevia
+		G = grevia.Graph.load_from_file(GRAPH_NAME)
 		documents_dic,data_index = txt2graph.read_file(TXT_PICKLE)
 		for node,data in G.nodes(data=True):
 			if set(word_list) & set(node.split('_')):
@@ -311,7 +313,7 @@ def make_search(search_string,evia_paths):
 					data_dic[node] = {}
 		console_message = 'Search results:'
 	return data_dic,console_message
-
+"""
 def make_search_db(search_string):
 
 	word_list = search_string.split()
