@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
+VERSION = 1.2
+AUTHOR = 'Benjamin Ricaud'
+COPYRIGHT = 'Copyright (c) 2017, Benjamin Ricaud'
+LICENCE = 'AGPL 3'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_SUBFOLDER = 'data/'

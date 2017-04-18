@@ -5,13 +5,13 @@
 		<title>Upload files and folders</title>
 		{% load staticfiles %}
 		<link rel="stylesheet" href="{% static 'css/style.css' %}" />
-		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+			<link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}" />
 		<link href="{% static 'fileupload/basic.min.css' %}" type="text/css" rel="stylesheet"/>
 		<link href="{% static 'fileupload/dropzone.min.css' %}" type="text/css" rel="stylesheet"/>
 		<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
 	</head>
 	<body>
-		<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
+		<img src="{% static 'images/eviacyberneticsalign.png' %}" width="200px"/>
 		<h1>Add files</h1>
 		<div class="evia">
 			<p>Click on the box below or drag and drop files and folders in it. You may put entire folders as the files are filtered and only pdf files are loaded. These files will be analysed by Weviana.</p>

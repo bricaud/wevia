@@ -3,13 +3,14 @@
 	<link rel="icon" href="../favicon.ico" />
 	{% load staticfiles %}
 	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-		<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
+	<link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}" />
+	<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
 </head>
 <body>
-<img src="http://www.eviacybernetics.com/images/Eviacybernetics.png" width="300px"/>
-<h1>Evia vous souhaite la bienvenue</h1>
-<p>Version: 1.1</p>
+<!--<img src="{% static 'images/Eviacybernetics.png' %}" width="300px"/>-->
+<img src="{% static 'images/eviacyberneticsalign.png' %}" width="200px"/>
+<h1>Weviana vous souhaite la bienvenue</h1>
+<p>Weviana version: {{ weviana_version }} <br> Grevia version: {{ grevia_version }}</p>
 <div class="evia">
 <h2><i class="fa fa-cogs fa-3x" aria-hidden="true" style=" vertical-align: middle;"></i> Installation et initialisation</h2>
 <p>Avant de pouvoir utiliser les outils d'analyse de documents, Evia a besoin d'analyser tous les documents. Pour cela, vous devez lancer l'installation. </p>
