@@ -186,6 +186,7 @@ def run_classify_db(evia_paths):
 				' You may need to clean the database.')
 			warnings.warn(warnMessage)
 	clusters_dic = txt2graph.doc_classif_db(GRAPH_NAME,document_index_dic,CSV_full_name)
+	# clean old classification and save the new one in the database:
 	Cluster.objects.all().delete()
 	save_classif_in_db(clusters_dic)
 	return 'CSV file containing the classification saved in {}'.format(CSV_full_name)
