@@ -137,11 +137,14 @@ def save_nodes_in_db(node_dic):
 	# Progess bar
 	pbar = tqdm.tqdm(total=nb_nodes)
 	for node in node_dic.keys():
+		# Save the graph node in the database
 		new_node = GraphNode.objects.create(name=node)
 		if 'paths' in node_dic[node]:
 			for document_id in node_dic[node]['paths'].keys():
 				doc = Document.objects.get(id=document_id)
 				print(doc)
+				# Create a document index connection the GraphNode with 
+				# the documents where it appears
 				doc_index = DocumentIndex(document=doc, graphnode=new_node)
 				doc_index.load_list(node_dic[node]['paths'][document_id]['word_positions'])
 				doc_index.save()
