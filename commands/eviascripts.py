@@ -17,6 +17,8 @@ from graphdesign.models import GraphNode, DocumentIndex
 from fileupload.models import Document
 from classif.models import Cluster
 
+import grevia.g_gremlin as graphdatabase
+
 class EviaPaths():
 
 	def	__init__(self,PDF_PATH):
@@ -320,7 +322,6 @@ def make_search(search_string,evia_paths):
 	return data_dic,console_message
 """
 def make_search_db(search_string):
-
 	word_list = search_string.split()
 	total_results = []
 	for permlist in permutations(word_list,len(word_list)):
@@ -357,3 +358,46 @@ def make_search_db(search_string):
 	console_message = 'Search results:'
 	return data_dic,console_message
 
+
+def make_search_graphdb(search_string):
+	word_list = search_string.split()
+	total_results = []
+	for permlist in permutations(word_list,len(word_list)):
+		sentence = '_'.join(permlist)
+		print('searching ',sentence)
+		#search_results = GraphNode.objects.filter(name__icontains=sentence)
+		G = graphdatabase.DiGraph()
+		search_results = G.search_expression(sentence)
+		[total_results.append(item) for item in search_results]
+	data_dic = {}
+	for result in total_results:
+		expression = result['expression']
+		doc_ids_dic = result['paths']
+
+		data_dic[expression] = {}
+		#documents_list = DocumentIndex.objects.filter(graphnode=result)
+		for doc_id in doc_ids_dic:
+			documents_list = Document.objects.filter(id=doc_id)
+			document = documents_list[0]
+			document_id = document.id
+			doc_text = document.text
+			list_of_positions = doc_ids_dic[doc_id]['word_positions']
+			text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
+			data_dic[expression][document_id] = {}
+			data_dic[expression][document_id]['name'] = document.name
+			data_dic[expression][document_id]['word_positions'] = list_of_positions
+			data_dic[expression][document_id]['text'] = text_around
+			try:
+				data_dic[expression][document_id]['cluster'] = document.cluster.number
+			except:
+				print('Warning: document {} does not belong to any cluster. Please run the classification.'
+					.format(data_dic[expression][document_id]['name']))
+				data_dic[expression][document_id]['cluster'] = -1
+			if os.path.isfile(document.file.path):
+				data_dic[expression][document_id]['url'] = document.file.url
+			else:
+				warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
+				' You may need to clean the database.')
+				warnings.warn(warnMessage)
+	console_message = 'Search results:'
+	return data_dic,console_message

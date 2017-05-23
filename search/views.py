@@ -32,7 +32,7 @@ def make_search(searchquery,paths_object,sorted_param='keyword'):
 	if not searchquery:
 		return {},''
 	print('starting the search, keyword: {}'.format(searchquery))	
-	search_results,console_message = cevia.make_search_db(searchquery)#,paths_object)
+	search_results,console_message = cevia.make_search_graphdb(searchquery)#,paths_object)
 	print(console_message)
 	search_flat = []
 	for keyword in search_results.keys():
