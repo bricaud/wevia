@@ -99,7 +99,7 @@ def run_singlefile_textextract(pdf_file,evia_paths):
 	if error_code:
 		message = message + ' Error occured during extraction of text.'
 	return file_data,message
-
+"""
 def make_graph(graph_threshold,evia_paths):
 	TXT_PATH = evia_paths.TXT_PATH
 	TXT_PICKLE = evia_paths.TXT_PICKLE
@@ -118,6 +118,7 @@ def make_graph(graph_threshold,evia_paths):
 		print('Graph saved in file {}'.format(GRAPH_NAME))
 		console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME)
 	return console_message
+"""
 
 def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths):
 	GRAPH_NAME = evia_paths.GRAPH_NAME
@@ -142,7 +143,7 @@ def save_nodes_in_db(node_dic):
 		if 'paths' in node_dic[node]:
 			for document_id in node_dic[node]['paths'].keys():
 				doc = Document.objects.get(id=document_id)
-				print(doc)
+				#print(doc)
 				# Create a document index connection the GraphNode with 
 				# the documents where it appears
 				doc_index = DocumentIndex(document=doc, graphnode=new_node)
