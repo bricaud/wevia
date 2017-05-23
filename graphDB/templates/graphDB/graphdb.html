@@ -1,0 +1,28 @@
+<head>
+	<title>Evia</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+	<link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
+</head>
+<body>
+<img src="{% static 'images/eviacyberneticsalign.png' %}" width="200px"/>
+<h1>Options avanc&eacute;es</h1>
+<div class="evia">
+<p>Base de donn&eacute;es graphe </p>
+<p style="text-align: center;">
+	<div>	
+	<form action="#" method="get">
+		<i class="fa fa-search fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Check the database" name="check_db"> V&eacute;rifier la base de donn&eacute;es graphe.
+		<i class="fa fa-search fa-border" aria-hidden="true"></i> <input type="submit" class="btn" value="Write the database" name="write_db"> V&eacute;rifier la base de donn&eacute;es graphe.
+	</form>
+	</div>
+</p>
+</div>
+<div style="display: inline-block;vertical-align: top;">
+		<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true"></i></a>
+		<p>Retour au menu</p>
+</div>
+<p>{{ console_message }}</p>
+</body>

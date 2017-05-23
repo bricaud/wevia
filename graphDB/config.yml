@@ -1,0 +1,14 @@
+scheme: 'ws'
+hosts: ['localhost']
+port': 8182
+ssl_certfile: ''
+ssl_keyfile: ''
+ssl_password: ''
+username: ''
+password: ''
+response_timeout: 10
+max_conns: 4
+min_conns: 1
+max_times_acquired: 16
+max_inflight: 64
+message_serializer: 'goblin.driver.GraphSONMessageSerializer'
