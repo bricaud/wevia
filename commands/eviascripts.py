@@ -17,7 +17,7 @@ from graphdesign.models import GraphNode, DocumentIndex
 from fileupload.models import Document
 from classif.models import Cluster
 
-import grevia.g_gremlin as graphdatabase
+import grevia.wordgraph as wordgraph
 
 class EviaPaths():
 
@@ -130,8 +130,9 @@ def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths):
 	print('Making the graph...')
 	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
 	print('Graph saved in file {}'.format(GRAPH_NAME))
-	print('Saving nodes in database...')
-	message_db = save_nodes_in_db(node_dic)
+	#print('Saving nodes in database...')
+	#message_db = save_nodes_in_db(node_dic)
+	message_db = ''
 	console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME) + '\n' + message_db
 	return console_message
 
@@ -321,6 +322,8 @@ def make_search(search_string,evia_paths):
 		console_message = 'Search results:'
 	return data_dic,console_message
 """
+
+"""
 def make_search_db(search_string):
 	word_list = search_string.split()
 	total_results = []
@@ -357,44 +360,41 @@ def make_search_db(search_string):
 				warnings.warn(warnMessage)
 	console_message = 'Search results:'
 	return data_dic,console_message
-
+"""
 
 def make_search_graphdb(search_string):
 	word_list = search_string.split()
-	total_results = []
-	for permlist in permutations(word_list,len(word_list)):
-		sentence = '_'.join(permlist)
-		print('searching ',sentence)
-		#search_results = GraphNode.objects.filter(name__icontains=sentence)
-		G = graphdatabase.DiGraph()
-		search_results = G.search_expression(sentence)
-		[total_results.append(item) for item in search_results]
+	G = wordgraph.Graph()
+	print('Nb of nodes ',G.number_of_nodes())
+	search_results = G.contains_expression(word_list)
 	data_dic = {}
-	for result in total_results:
-		expression = result['expression']
-		doc_ids_dic = result['paths']
-
-		data_dic[expression] = {}
-		#documents_list = DocumentIndex.objects.filter(graphnode=result)
-		for doc_id in doc_ids_dic:
+	for node in search_results:
+		expression = node.expression
+		expression_str = ' '.join(expression)
+		print('Result: ',node.node_id)
+		print(node.expression)
+		print(expression_str)
+		data_dic[expression_str] = {}
+		doc_ids = node.get_text_ids()
+		for doc_id in doc_ids:
 			documents_list = Document.objects.filter(id=doc_id)
 			document = documents_list[0]
 			document_id = document.id
 			doc_text = document.text
-			list_of_positions = doc_ids_dic[doc_id]['word_positions']
+			list_of_positions = node.get_paths(doc_id)
 			text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
-			data_dic[expression][document_id] = {}
-			data_dic[expression][document_id]['name'] = document.name
-			data_dic[expression][document_id]['word_positions'] = list_of_positions
-			data_dic[expression][document_id]['text'] = text_around
+			data_dic[expression_str][document_id] = {}
+			data_dic[expression_str][document_id]['name'] = document.name
+			data_dic[expression_str][document_id]['word_positions'] = list_of_positions
+			data_dic[expression_str][document_id]['text'] = text_around
 			try:
-				data_dic[expression][document_id]['cluster'] = document.cluster.number
+				data_dic[expression_str][document_id]['cluster'] = document.cluster.number
 			except:
 				print('Warning: document {} does not belong to any cluster. Please run the classification.'
-					.format(data_dic[expression][document_id]['name']))
-				data_dic[expression][document_id]['cluster'] = -1
+					.format(data_dic[expression_str][document_id]['name']))
+				data_dic[expression_str][document_id]['cluster'] = -1
 			if os.path.isfile(document.file.path):
-				data_dic[expression][document_id]['url'] = document.file.url
+				data_dic[expression_str][document_id]['url'] = document.file.url
 			else:
 				warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
 				' You may need to clean the database.')
