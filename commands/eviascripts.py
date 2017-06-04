@@ -366,7 +366,7 @@ def make_search_graphdb(search_string):
 	word_list = search_string.split()
 	G = wordgraph.Graph()
 	print('Nb of nodes ',G.number_of_nodes())
-	search_results = G.contains_expression(word_list)
+	search_results = G.contains_words(word_list)
 	data_dic = {}
 	for node in search_results:
 		expression = node.expression
