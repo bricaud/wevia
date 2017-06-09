@@ -367,37 +367,143 @@ def make_search_graphdb(search_string):
 	G = wordgraph.Graph()
 	print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.contains_words(word_list)
+	data_dic = get_info_from_list(search_results)
+
+	# get similar expressions
+	sim_data_dic = {}
+	for node in search_results:
+		n_list = G.get_neighbors(node.node_id,'similar')
+		sim_data_dic.update(get_info_from_list(n_list))
+	#data_dic = sort_entries(data_dic,sim_data_dic)
+	data_dic.update(sim_data_dic)
+
+	console_message = 'Search results:'
+	return data_dic,console_message
+
+def get_info_from_list(search_results):
 	data_dic = {}
 	for node in search_results:
 		expression = node.expression
 		expression_str = ' '.join(expression)
-		print('Result: ',node.node_id)
-		print(node.expression)
-		print(expression_str)
+		#print('Result: ',node.node_id)
+		#print(node.expression)
+		#print(expression_str)
 		data_dic[expression_str] = {}
 		doc_ids = node.get_text_ids()
 		for doc_id in doc_ids:
-			documents_list = Document.objects.filter(id=doc_id)
-			document = documents_list[0]
-			document_id = document.id
-			doc_text = document.text
-			list_of_positions = node.get_paths(doc_id)
-			text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
-			data_dic[expression_str][document_id] = {}
-			data_dic[expression_str][document_id]['name'] = document.name
-			data_dic[expression_str][document_id]['word_positions'] = list_of_positions
-			data_dic[expression_str][document_id]['text'] = text_around
-			try:
-				data_dic[expression_str][document_id]['cluster'] = document.cluster.number
-			except:
-				print('Warning: document {} does not belong to any cluster. Please run the classification.'
-					.format(data_dic[expression_str][document_id]['name']))
-				data_dic[expression_str][document_id]['cluster'] = -1
-			if os.path.isfile(document.file.path):
-				data_dic[expression_str][document_id]['url'] = document.file.url
-			else:
-				warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
-				' You may need to clean the database.')
-				warnings.warn(warnMessage)
+			document_id,doc_info = get_doc_info(doc_id,node.get_paths(doc_id))
+			data_dic[expression_str][document_id] = doc_info
+	return data_dic
+
+def get_doc_info(doc_id,list_of_positions):
+	documents_list = Document.objects.filter(id=doc_id)
+	document = documents_list[0]
+	document_id = document.id
+	doc_text = document.text
+	text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
+	data_dic = {}
+	data_dic['name'] = document.name
+	data_dic['word_positions'] = list_of_positions
+	data_dic['text'] = text_around
+	try:
+		data_dic['cluster'] = document.cluster.number
+	except:
+		print('Warning: document {} does not belong to any cluster. Please run the classification.'
+			.format(data_dic['name']))
+		data_dic['cluster'] = -1
+	if os.path.isfile(document.file.path):
+		data_dic['url'] = document.file.url
+	else:
+		warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
+		' You may need to clean the database.')
+		warnings.warn(warnMessage)
+	return document_id,data_dic
+
+
+def make_search_doc_graphdb(search_string):
+	word_list = search_string.split()
+	G = wordgraph.Graph()
+	print('Nb of nodes ',G.number_of_nodes())
+	search_results = G.contains_words(word_list)
+	search_results = add_flux_to_list(G,None,search_results,1./len(search_results))
+	data_dic = get_info_from_list_doc(search_results)
+
+	# get similar expressions
+	sim_total_dic = {}
+	for (node,flux) in search_results:
+		n_list = G.get_neighbors(node.node_id,'similar')
+		n_list = add_flux_to_list(G,node,n_list,flux)
+		sim_dic = get_info_from_list_doc(n_list)
+		sim_total_dic = update_dic(sim_total_dic,sim_dic)
+		for (node2,flux2) in n_list:
+			n_list2 = G.get_neighbors(node2.node_id,'similar')
+			n_list2 = add_flux_to_list(G,node2,n_list2,flux2)
+			sim_dic2 = get_info_from_list_doc(n_list2)
+			sim_total_dic = update_dic(sim_total_dic,sim_dic2)
+	#data_dic = sort_entries(data_dic,sim_data_dic)
+	data_dic = update_dic(data_dic,sim_total_dic)
+
 	console_message = 'Search results:'
 	return data_dic,console_message
+
+def add_flux_to_list(G,node,node_list,node_flux):
+	weight_list = []
+	total_weight = 0
+	# Collecting the weights
+	for n_node in node_list:
+		if node is None:
+			weight_list.append((n_node,1.))
+			total_weight += 1
+		else:
+			weight = G.get_similarity_weight(node.node_id,n_node.node_id)
+			weight_list.append((n_node,weight))
+			total_weight += weight
+	return [(node,weight / total_weight * node_flux) for (node,weight) in weight_list]
+
+
+def get_info_from_list_doc(search_results):
+	data_dic = {}
+	#print(search_results)
+	for (node,flux) in search_results:
+		expression = node.expression
+		expression_str = ' '.join(expression)
+		#print('Result: ',node.node_id)
+		#print(node.expression)
+		#print(expression_str)
+		doc_ids = node.get_text_ids()
+		for doc_id in doc_ids:
+			document_id,doc_info = get_doc_info(doc_id,node.get_paths(doc_id))
+			doc_info['expression'] = expression_str
+			doc_info['expression_weight'] = flux
+			if document_id not in data_dic:
+				data_dic[document_id] = []
+			data_dic[document_id].append(doc_info)
+	return data_dic
+
+
+def update_dic(dic1,dic2):
+	for doc_id in dic2:
+		if doc_id in dic1:
+			for entry2 in dic2[doc_id]:
+				same_entry = [(idx,entry) for (idx,entry) in enumerate(dic1[doc_id]) if entry['word_positions'] == entry2['word_positions']]
+				if not same_entry:
+					dic1[doc_id].append(entry2)
+				else:
+					for (idx,entry) in same_entry:
+						dic1[doc_id][idx]['expression_weight'] += entry2['expression_weight']
+		else:
+			dic1[doc_id] = dic2[doc_id]
+	return dic1
+"""
+def update_dic(dic1,dic2):
+	for doc in dic2:
+		if isinstance(dic2[doc],list):
+			list_to_add = dic2[doc]
+		else:
+			list_to_add = [dic2[doc]]
+		if doc in dic1:
+			dic1[doc] += list_to_add
+		else:
+			dic1[doc] = list_to_add
+	return dic1
+"""

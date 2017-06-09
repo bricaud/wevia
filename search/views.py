@@ -19,11 +19,11 @@ def index(request):
 	console_message = ''	
 	if(request.GET.get('make_search')):
 		searchquery = str(request.GET.get('search'))
-		search_results,console_message = make_search(searchquery,evia_paths)
+		search_results,console_message = make_search_groupdoc(searchquery,evia_paths)
 	if(request.GET.get('make_search_cluster')):
 		searchquery = str(request.GET.get('search'))
-		search_results,console_message = make_search(searchquery,evia_paths,sorted_param='cluster')
-	return render(request,'search.html',
+		search_results,console_message = make_search_groupdoc(searchquery,evia_paths,sorted_param='cluster')
+	return render(request,'search-groupdoc.html',
 		{ 'query':searchquery, 'search_results' :search_results, 'console_message' : console_message})
 
 	
@@ -46,6 +46,29 @@ def make_search(searchquery,paths_object,sorted_param='keyword'):
 	else:
 		sorted_search = sorted(search_flat,key= lambda results_dic:results_dic[sorted_param])
 		return sorted_search,console_message
+
+def make_search_groupdoc(searchquery,paths_object,sorted_param='keyword'):
+	if not searchquery:
+		return {},''
+	print('starting the search, keyword: {}'.format(searchquery))	
+	search_results,console_message = cevia.make_search_doc_graphdb(searchquery)#,paths_object)
+	print(console_message)
+	search_flat = []
+	for docname in search_results.keys():
+		for entry in search_results[docname]:
+			results_dic = entry
+			#print(entry)
+			results_dic['document'] = docname
+			results_dic['color'] = set_cluster_color(entry['cluster'])
+			search_flat.append(results_dic)
+	if sorted_param=='keyword':
+		return search_flat,console_message
+	else:
+		sorted_search = sorted(search_flat,key= lambda results_dic:results_dic[sorted_param])
+		return sorted_search,console_message
+
+
+
 
 def set_cluster_color(cluster_id):
 	d3_category20 = (['#1f77b4', '#aec7e8',

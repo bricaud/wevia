@@ -26,17 +26,19 @@ def index(request):
 
 	
 def run_classify(paths_objects):
-	global stdoutstream
+	#global stdoutstream
 	print('Running classification.')
-	with redirect_stdout(stdoutstream):
-		output = cevia.run_classify_db(paths_objects)
+	#with redirect_stdout(stdoutstream):
+	#	output = cevia.run_classify_db(paths_objects)
+	output = cevia.run_classify_db(paths_objects)
 	return output
 
 def classify_in_folders(paths_object):
-	global stdoutstream
+	#global stdoutstream
 	print('Classifying clusters into folders.')
-	with redirect_stdout(stdoutstream):
-		output = cevia.csv2folders(paths_object)
+	#with redirect_stdout(stdoutstream):
+	#	output = cevia.csv2folders(paths_object)
+	output = cevia.csv2folders(paths_object)
 	return output
 
 def request_output_page(request):
