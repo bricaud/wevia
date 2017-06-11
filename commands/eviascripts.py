@@ -372,7 +372,7 @@ def make_search_graphdb(search_string):
 	# get similar expressions
 	sim_data_dic = {}
 	for node in search_results:
-		n_list = G.get_neighbors(node.node_id,'similar')
+		n_list = G.get_neighbors(node.node_id,'similar','both')
 		sim_data_dic.update(get_info_from_list(n_list))
 	#data_dic = sort_entries(data_dic,sim_data_dic)
 	data_dic.update(sim_data_dic)
@@ -424,6 +424,17 @@ def make_search_doc_graphdb(search_string):
 	word_list = search_string.split()
 	G = wordgraph.Graph()
 	print('Nb of nodes ',G.number_of_nodes())
+	search_results = G.find_similarity_nodes(word_list)
+	search_results = add_flux_to_list(G,None,search_results,1./len(search_results))
+	data_dic = get_info_from_list_doc(search_results)
+
+	console_message = 'Search results:'
+	return data_dic,console_message
+"""
+def make_search_doc_graphdb(search_string):
+	word_list = search_string.split()
+	G = wordgraph.Graph()
+	print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.contains_words(word_list)
 	search_results = add_flux_to_list(G,None,search_results,1./len(search_results))
 	data_dic = get_info_from_list_doc(search_results)
@@ -431,12 +442,12 @@ def make_search_doc_graphdb(search_string):
 	# get similar expressions
 	sim_total_dic = {}
 	for (node,flux) in search_results:
-		n_list = G.get_neighbors(node.node_id,'similar')
+		n_list = G.get_neighbors(node.node_id,'similar','in')
 		n_list = add_flux_to_list(G,node,n_list,flux)
 		sim_dic = get_info_from_list_doc(n_list)
 		sim_total_dic = update_dic(sim_total_dic,sim_dic)
 		for (node2,flux2) in n_list:
-			n_list2 = G.get_neighbors(node2.node_id,'similar')
+			n_list2 = G.get_neighbors(node2.node_id,'similar','out')
 			n_list2 = add_flux_to_list(G,node2,n_list2,flux2)
 			sim_dic2 = get_info_from_list_doc(n_list2)
 			sim_total_dic = update_dic(sim_total_dic,sim_dic2)
@@ -445,7 +456,7 @@ def make_search_doc_graphdb(search_string):
 
 	console_message = 'Search results:'
 	return data_dic,console_message
-
+"""
 def add_flux_to_list(G,node,node_list,node_flux):
 	weight_list = []
 	total_weight = 0
