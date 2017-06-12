@@ -1,0 +1,72 @@
+<head>
+	<title>Evia search</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+	<link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}" />
+			<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
+<script type="text/javascript">
+	var d3_category20 = [
+  0x1f77b4, 0xaec7e8,
+  0xff7f0e, 0xffbb78,
+  0x2ca02c, 0x98df8a,
+  0xd62728, 0xff9896,
+  0x9467bd, 0xc5b0d5,
+  0x8c564b, 0xc49c94,
+  0xe377c2, 0xf7b6d2,
+  0x7f7f7f, 0xc7c7c7,
+  0xbcbd22, 0xdbdb8d,
+  0x17becf, 0x9edae5
+]
+</script>
+</head>
+<body>
+<img src="{% static 'images/eviacyberneticsalign.png' %}" width="200px"/>
+<h1>SEARCH IN DOCUMENTS WITH EVIAGLE</h1>
+<div class="evia">
+<div>
+<form action="#" method="get">
+<input type="text" value="{{ query }}" name="search" size="20"/><input type="submit" class="btn" value="Search" name="make_search">
+<br>
+<input type="submit" class="btn" value="Keyword order" name="make_search">
+<input type="submit" class="btn" value="Cluster order" name="make_search_cluster">
+</form>
+</div>
+
+<div style="display: inline-block;vertical-align: top;">
+		<a href="../"><i class="fa fa-home fa-border" aria-hidden="true"></i></a>
+</div>
+<p> {{ console_message }}</p>
+{% if query %}
+<p>Search results for "{{ query }}"</p>
+	{% if search_results %}
+	<table style="border-collapse: collapse;">
+		<tr>
+			<th style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Document</th>
+			<th>Cluster id</th>
+			<th>Expression</th>
+			<th>Expression weight</th>
+			<th>Positions</th>
+			<th>Surrounding text</th>
+		</tr>
+		{% for info_dic in search_results %}
+		<tr>
+			<td style="border: 1px solid black; padding: 5px;background-color: {{ info_dic.color }};">{{ info_dic.cluster }}</td>
+			<td style="border: 1px solid black; padding: 5px;background-color: {{ info_dic.color }};"><a href="../{{ info_dic.url }}"> {{ info_dic.name }}</a><a href="dbinfomod/{{ info_dic.name }}"> DB</a></td>
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ info_dic.expression }}</td>
+			{% if info_dic.expression_weight > 0.01 %}
+			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ info_dic.expression_weight|floatformat:-4 }}</td>
+			{% else %}
+			<td style="border: 2px solid black; background-color: #222222; padding: 5px;">{{ info_dic.expression_weight|floatformat:-4 }}</td>
+			{% endif %}
+			<td style="border: 1px solid black; padding: 5px;">{{ info_dic.word_positions}}</td>
+			<td style="border: 1px solid black; padding: 5px;">{{ info_dic.text}}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% else %}
+	<p> {{ query }} not found.</p>
+	{% endif %}
+{% endif %}
+</div>
+</body>
