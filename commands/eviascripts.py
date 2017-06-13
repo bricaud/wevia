@@ -19,6 +19,8 @@ from classif.models import Cluster
 
 import grevia.wordgraph as wordgraph
 
+from operator import itemgetter
+
 class EviaPaths():
 
 	def	__init__(self,PDF_PATH):
@@ -425,7 +427,11 @@ def make_search_doc_graphdb(search_string):
 	G = wordgraph.Graph()
 	print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.find_similarity_nodes(word_list)
-	search_results = add_flux_to_list(G,None,search_results,1./len(search_results))
+	search_results = [(node,1./((node.degree_sim1+1)*(node.degree_sim2+1))) for node in search_results]
+	search_results = sorted(search_results, key=itemgetter(1),reverse=True)# lambda search_results : search_results[1], reverse=True)
+	#search_results = [(node,1./(node.degree_sim1)) for node in search_results]
+	
+	#search_results = add_flux_to_list(G,None,search_results,1./len(search_results))
 	data_dic = get_info_from_list_doc(search_results)
 
 	console_message = 'Search results:'
