@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-VERSION = 1.2
+VERSION = 1.3
 AUTHOR = 'Benjamin Ricaud'
 COPYRIGHT = 'Copyright (c) 2017, Benjamin Ricaud'
 LICENCE = 'AGPL 3'
