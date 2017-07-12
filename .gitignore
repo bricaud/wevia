@@ -5,3 +5,9 @@ __pycache__/*
 *cpython*
 weviana/
 /data/db.sqlite3
+
+search/__pycache__/
+
+graphdesign/__pycache__/
+
+*.pyc
