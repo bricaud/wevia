@@ -50,8 +50,7 @@ INSTALLED_APPS = [
     'classif',
     'search',
     'fileupload',
-    'advancedSettings',
-    'graphDB'
+    'advancedSettings'
 ]
 
 MIDDLEWARE = [

@@ -1,3 +1,7 @@
+# Graph database module using Goblin
+# This is a test of the Goblin module.
+# The following code is not used in the present version of wevia
+
 from django.shortcuts import render
 
 import asyncio
