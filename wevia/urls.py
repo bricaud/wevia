@@ -27,7 +27,7 @@ urlpatterns = [
 	url(r'^search/', include('search.urls')),
 	url(r'^fileupload/', include('fileupload.urls')),
 	url(r'^advancedsettings/', include('advancedSettings.urls')),
-	url(r'^graphDB/', include('graphDB.urls')),
+	#url(r'^graphDB/', include('graphDB.urls')),
 ]
 
 from django.conf import settings
