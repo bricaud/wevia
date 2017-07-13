@@ -13,6 +13,7 @@ import textbox
 import txt2graph
 import tqdm
 
+from django.conf import settings
 from graphdesign.models import GraphNode, DocumentIndex
 from fileupload.models import Document
 from classif.models import Cluster
@@ -124,13 +125,13 @@ def make_graph(graph_threshold,evia_paths):
 	return console_message
 """
 
-def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths):
+def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths,GRAPH_SERVER_ADDRESS):
 	GRAPH_NAME = evia_paths.GRAPH_NAME
 	if not db_entries_dic:
 		print('empty database!')
 		return 'empty database!'
 	print('Making the graph...')
-	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
+	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,GRAPH_SERVER_ADDRESS,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
 	print('Graph saved in file {}'.format(GRAPH_NAME))
 	#print('Saving nodes in database...')
 	#message_db = save_nodes_in_db(node_dic)
@@ -366,7 +367,7 @@ def make_search_db(search_string):
 
 def make_search_graphdb(search_string):
 	word_list = search_string.split()
-	G = wordgraph.Graph()
+	G = wordgraph.Graph(settings.GRAPH_SERVER_ADDRESS)
 	print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.contains_words(word_list)
 	data_dic = get_info_from_list(search_results)
@@ -424,7 +425,7 @@ def get_doc_info(doc_id,list_of_positions):
 
 def make_search_doc_graphdb(search_string):
 	word_list = search_string.split()
-	G = wordgraph.Graph()
+	G = wordgraph.Graph(settings.GRAPH_SERVER_ADDRESS)
 	print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.find_similarity_nodes(word_list)
 	search_results = [(node,1./((node.degree_sim1+1)*(node.degree_sim2+1))) for node in search_results]

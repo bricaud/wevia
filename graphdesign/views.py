@@ -29,7 +29,7 @@ def make_graph_from_db(db_entries_dic,graph_threshold,paths_object):
 	#global stdoutstream
 	#with redirect_stdout(stdoutstream):
 	#	output = cevia.make_graph_from_db(db_entries_dic,graph_threshold,paths_object)
-	output = cevia.make_graph_from_db(db_entries_dic,graph_threshold,paths_object)
+	output = cevia.make_graph_from_db(db_entries_dic,graph_threshold,paths_object,settings.GRAPH_SERVER_ADDRESS)
 	print('Console message: '+output)
 	return output
 

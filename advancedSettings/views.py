@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 import os
-#from django.conf import settings
+from django.conf import settings
 from classif.models import Cluster
 from fileupload.models import Document
 from graphdesign.models import GraphNode
@@ -81,7 +81,7 @@ def run_erase_db():
 
 def run_check_graphdb():
 	try:
-		graph_object = graphdatabase.DiGraph() 
+		graph_object = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS) 
 	except:
 		message = "Cannot access the graph database. Please check the Gremlin server."
 		print(message)
@@ -93,7 +93,7 @@ def run_clean_graphdb():
 	message = run_check_graphdb()
 	if message.startswith('Cannot'):
 		return message
-	graph = graphdatabase.DiGraph()
+	graph = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS)
 	list_of_nodes = graph.list_of_nodes(data=False)
 	removed_nodes = 0
 	for node in list_of_nodes:
@@ -104,7 +104,7 @@ def run_clean_graphdb():
 
 def run_erase_graphdb():
 	try:
-		graph_object = graphdatabase.DiGraph()
+		graph_object = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS)
 		graph_object.remove_all()
 	except:
 		message = "Cannot access the graph database. Please check the Gremlin server."
