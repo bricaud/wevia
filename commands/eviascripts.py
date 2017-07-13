@@ -195,7 +195,7 @@ def run_classify_db(evia_paths):
 			warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
 				' You may need to clean the database.')
 			warnings.warn(warnMessage)
-	clusters_dic = txt2graph.doc_classif_db(GRAPH_NAME,document_index_dic,CSV_full_name)
+	clusters_dic = txt2graph.doc_classif_db(GRAPH_NAME,settings.GRAPH_SERVER_ADDRESS,document_index_dic,CSV_full_name)
 	# clean old classification and save the new one in the database:
 	Cluster.objects.all().delete()
 	save_classif_in_db(clusters_dic)
