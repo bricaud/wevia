@@ -168,7 +168,7 @@ def run_classify(evia_paths):
 		print('No text data file. Please extract the text first with pdf2txt. ')
 		console_message = 'No text data file found. Please extract the text first with pdf2txt. '
 	elif not os.path.isfile(GRAPH_NAME):
-		print('No graph found. Please construct the graph first. ')
+		print('No graph found at '+GRAPH_NAME+'. Please construct the graph first. ')
 		console_message = 'No graph found. Please construct the graph first. '
 	elif not os.path.isfile(EX_TXT_PICKLE):
 		print('No file with info on extracted text. Please extract the text first with pdf2txt. ')
@@ -180,10 +180,6 @@ def run_classify(evia_paths):
 
 def run_classify_db(evia_paths):
 	CSV_full_name = evia_paths.CSV_full_name
-	GRAPH_NAME = evia_paths.GRAPH_NAME
-	if not os.path.isfile(GRAPH_NAME):
-		print('No graph found. Please construct the graph first. ')
-		return 'No graph found. Please construct the graph first. '
 	document_index_dic = {}
 	for document in Document.objects.all():
 		document_index_dic[document.id] = {}
@@ -195,7 +191,7 @@ def run_classify_db(evia_paths):
 			warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
 				' You may need to clean the database.')
 			warnings.warn(warnMessage)
-	clusters_dic = txt2graph.doc_classif_db(GRAPH_NAME,settings.GRAPH_SERVER_ADDRESS,document_index_dic,CSV_full_name)
+	clusters_dic = txt2graph.doc_classif_db(settings.GRAPH_SERVER_ADDRESS,document_index_dic,CSV_full_name)
 	# clean old classification and save the new one in the database:
 	Cluster.objects.all().delete()
 	save_classif_in_db(clusters_dic)

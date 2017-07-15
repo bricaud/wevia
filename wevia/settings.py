@@ -149,5 +149,5 @@ PDF_PATH = MEDIA_ROOT
 UPLOAD_PATH = 'weviana/files/%Y/%m/%d' # relative path from MEDIA_ROOT
 
 # Adress of the graph database
-GRAPH_SERVER_ADDRESS = '0:8182'
+GRAPH_SERVER_ADDRESS = 'graphdb:8182'
 #GRAPH_SERVER_PORT = '8182'
