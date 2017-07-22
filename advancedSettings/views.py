@@ -83,7 +83,7 @@ def run_check_graphdb():
 	try:
 		graph_object = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS) 
 	except:
-		message = "Cannot access the graph database. Please check the Gremlin server."
+		message = "Cannot access the graph database at "+settings.GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
 		print(message)
 		return message	
 	return ("""Graph with {} nodes and {} edges."""
@@ -107,7 +107,7 @@ def run_erase_graphdb():
 		graph_object = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS)
 		graph_object.remove_all()
 	except:
-		message = "Cannot access the graph database. Please check the Gremlin server."
+		message = "Cannot access the graph database at "+settings.GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
 		print(message)
 		return message	
 	return 'Database erased.'
