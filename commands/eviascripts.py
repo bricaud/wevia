@@ -18,7 +18,7 @@ from graphdesign.models import GraphNode, DocumentIndex
 from fileupload.models import Document
 from classif.models import Cluster
 
-import grevia.wordgraph as wordgraph
+import grevia
 
 from operator import itemgetter
 
@@ -125,19 +125,50 @@ def make_graph(graph_threshold,evia_paths):
 	return console_message
 """
 
+def add_document_to_graph(db_entry,graphdb):
+	print('Making the graph...')
+	db_entries_dic = {}
+	db_entries_dic[db_entry['name']] = db_entry 
+	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
+	message_db = ''
+	console_message = output_message+ '\n' + message_db
+	return console_message
+
+
 def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths,GRAPH_SERVER_ADDRESS):
 	GRAPH_NAME = evia_paths.GRAPH_NAME
 	if not db_entries_dic:
 		print('empty database!')
 		return 'empty database!'
+	print('Deleting previous graph...')
+	msg_delete = erase_graphdb(GRAPH_SERVER_ADDRESS)
 	print('Making the graph...')
-	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,GRAPH_SERVER_ADDRESS,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
-	print('Graph saved in file {}'.format(GRAPH_NAME))
-	#print('Saving nodes in database...')
-	#message_db = save_nodes_in_db(node_dic)
+	try:
+		graphdb = grevia.wordgraph.Graph('GremlinGraph',GRAPH_SERVER_ADDRESS)
+	except:
+		message = "Cannot access the graph database at "+GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
+		print(message)
+		return message
+	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
 	message_db = ''
-	console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME) + '\n' + message_db
+	console_message = output_message+ '\n' + message_db
 	return console_message
+
+def erase_graphdb(GRAPH_SERVER_ADDRESS):
+	try:
+		graph_object = grevia.wordgraph.Graph('GremlinGraph',GRAPH_SERVER_ADDRESS)
+		graph_object.remove_all()
+	except:
+		message = "Cannot access the graph database at "+GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
+		print(message)
+		return message
+	
+	all_documents = Document.objects.all()
+	for document in all_documents:
+		document.is_in_graph = False
+		document.save()
+	return 'Database erased.'
+
 
 def save_nodes_in_db(node_dic):
 	nb_nodes = len(node_dic)
@@ -363,7 +394,7 @@ def make_search_db(search_string):
 
 def make_search_graphdb(search_string):
 	word_list = search_string.split()
-	G = wordgraph.Graph(settings.GRAPH_SERVER_ADDRESS)
+	G = grevia.wordgraph.Graph('GremlinGraph',settings.GRAPH_SERVER_ADDRESS)
 	print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.contains_words(word_list)
 	data_dic = get_info_from_list(search_results)
@@ -421,8 +452,8 @@ def get_doc_info(doc_id,list_of_positions):
 
 def make_search_doc_graphdb(search_string):
 	word_list = search_string.split()
-	G = wordgraph.Graph(settings.GRAPH_SERVER_ADDRESS)
-	print('Nb of nodes ',G.number_of_nodes())
+	G = grevia.wordgraph.Graph('GremlinGraph',settings.GRAPH_SERVER_ADDRESS)
+	#print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.find_similarity_nodes(word_list)
 	search_results = [(node,1./((node.degree_sim1+1)*(node.degree_sim2+1))) for node in search_results]
 	search_results = sorted(search_results, key=itemgetter(1),reverse=True)# lambda search_results : search_results[1], reverse=True)

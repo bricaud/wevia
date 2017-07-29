@@ -6,9 +6,10 @@ from classif.models import Cluster
 from fileupload.models import Document
 from graphdesign.models import GraphNode
 
-import grevia.wordgraph as wordgraph
+import grevia
 import grevia.g_gremlin as graphdatabase
 
+import commands.eviascripts as cevia
 
 
 def index(request):
@@ -81,7 +82,7 @@ def run_erase_db():
 
 def run_check_graphdb():
 	try:
-		graph_object = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS) 
+		graph_object = grevia.wordgraph.Graph('GremlinGraph',settings.GRAPH_SERVER_ADDRESS)
 	except:
 		message = "Cannot access the graph database at "+settings.GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
 		print(message)
@@ -93,7 +94,7 @@ def run_clean_graphdb():
 	message = run_check_graphdb()
 	if message.startswith('Cannot'):
 		return message
-	graph = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS)
+	graph = grevia.wordgraph.Graph('GremlinGraph',settings.GRAPH_SERVER_ADDRESS)
 	list_of_nodes = graph.list_of_nodes(data=False)
 	removed_nodes = 0
 	for node in list_of_nodes:
@@ -103,11 +104,4 @@ def run_clean_graphdb():
 	return 'Database cleaned. {} nodes removed.'.format(removed_nodes)
 
 def run_erase_graphdb():
-	try:
-		graph_object = graphdatabase.DiGraph(settings.GRAPH_SERVER_ADDRESS)
-		graph_object.remove_all()
-	except:
-		message = "Cannot access the graph database at "+settings.GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
-		print(message)
-		return message	
-	return 'Database erased.'
+	return cevia.erase_graphdb(settings.GRAPH_SERVER_ADDRESS)

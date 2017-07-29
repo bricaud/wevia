@@ -19,11 +19,8 @@
 			<form class="dropzone" action="{% url 'fileupload' %}" method="post" enctype="multipart/form-data" id="myDropzone">
 				{% csrf_token %}
 			</form>
+			<p>Please wait until the upload is complete before quitting this page. Uncomplete upload are cancelled when leaving this page.</p>
  			<div id="output"> {{ message }}</div>
-			<div style="margin: 15px;display: inline-block;width: 200px">
-				<a href="../extraction/"><i class="fa fa-tasks fa-3x fa-border" aria-hidden="true"></i></a>
-				<p>Back to installation</p>
-			</div>
 			<div style="margin: 15px;display: inline-block;width: 200px">
 				<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true"></i></a>
 				<p>Main page</p>
@@ -34,7 +31,7 @@
 			Dropzone.options.myDropzone = {
 				// Prevents Dropzone from uploading files that are not pdf  
 				acceptedFiles: "application/pdf",
- 
+ 				parallelUploads: 1,
 				init : function() {
 					//dropzone listeners can be added here 
 					this.on("addedfile", function(file) {

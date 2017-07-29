@@ -12,6 +12,8 @@ from fileupload.models import Document
 stdoutstream = io.StringIO()
 
 
+
+
 def index(request):
 	num_var = 0
 	output = ''
@@ -19,8 +21,6 @@ def index(request):
 	evia_paths = cevia.EviaPaths(settings.PDF_PATH)
 	if(request.GET.get('run_classify')):
 		output = run_classify(evia_paths)
-	if(request.GET.get('classify_in_folders')):
-		output = classify_in_folders(evia_paths)
 	return render(request,'classify_template.html',
 		{'console_message' :output, 'loading':'False'})
 

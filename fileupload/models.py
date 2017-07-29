@@ -19,5 +19,6 @@ class Document(models.Model):
 	nb_pages = models.IntegerField(default=0)
 	cluster = models.ForeignKey(to='classif.Cluster', related_name="elements",
 		null=True, blank=True, on_delete=models.SET_NULL, default=None)
+	is_in_graph = models.BooleanField(default=False)
 	class Meta:
 		ordering = ('name',)
