@@ -421,20 +421,23 @@ def get_info_from_list(search_results):
 		data_dic[expression_str] = {}
 		doc_ids = node.get_text_ids()
 		for doc_id in doc_ids:
-			document_id,doc_info = get_doc_info(doc_id,node.get_paths(doc_id))
+			document_id,doc_info = get_doc_info(doc_id,expression,node.get_paths(doc_id))
 			data_dic[expression_str][document_id] = doc_info
 	return data_dic
 
-def get_doc_info(doc_id,list_of_positions):
+def get_doc_info(doc_id,expression,list_of_positions):
 	documents_list = Document.objects.filter(id=doc_id)
 	document = documents_list[0]
 	document_id = document.id
 	doc_text = document.text
-	text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
+	expression_len = len(expression)
+	text_before,text_after = txt2graph.get_surrounding_text_sliced(doc_text,list_of_positions[0],expression_len,nb_words=10)
 	data_dic = {}
 	data_dic['name'] = document.name
 	data_dic['word_positions'] = list_of_positions
-	data_dic['text'] = text_around
+	data_dic['text_before'] = text_before
+	data_dic['text_after'] = text_after
+	data_dic['text'] = text_before+ expression +text_after
 	try:
 		data_dic['cluster'] = document.cluster.number
 	except:
@@ -517,7 +520,7 @@ def get_info_from_list_doc(search_results):
 		#print(expression_str)
 		doc_ids = node.get_text_ids()
 		for doc_id in doc_ids:
-			document_id,doc_info = get_doc_info(doc_id,node.get_paths(doc_id))
+			document_id,doc_info = get_doc_info(doc_id,expression,node.get_paths(doc_id))
 			doc_info['expression'] = expression_str
 			doc_info['expression_weight'] = flux
 			if document_id not in data_dic:
@@ -552,3 +555,21 @@ def update_dic(dic1,dic2):
 			dic1[doc] = list_to_add
 	return dic1
 """
+
+
+
+def set_cluster_color(cluster_id):
+	d3_category20 = (['#1f77b4', '#aec7e8',
+		'#ff7f0e', '#ffbb78',
+		'#2ca02c', '#98df8a',
+		'#d62728', '#ff9896',
+		'#9467bd', '#c5b0d5',
+		'#8c564b', '#c49c94',
+		'#e377c2', '#f7b6d2',
+		'#7f7f7f', '#c7c7c7',
+		'#bcbd22', '#dbdb8d',
+		'#17becf', '#9edae5'
+	])
+	if cluster_id==-1:
+		return '#333333'
+	return d3_category20[cluster_id]

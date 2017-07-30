@@ -70,6 +70,24 @@ def request_display_classif(request):
 		'clusters_info' : sorted(clusters_info_dic.items())})
 
 
+def request_groups_of_files(request):
+	clusters = Cluster.objects.all()
+	cluster_dic = {}
+	clusters_info_dic = {}
+	for cluster in clusters:
+		doc_list = []
+		cluster_dic[cluster.number] = {}
+		clusters_info_dic[cluster.number] = {}
+		c_documents = Document.objects.filter(cluster=cluster)
+		cluster_dic[cluster.number]['confidence'] = '{}%'.format(cluster.confidence)#'{.0f}%'.format(cluster.confidence*100)
+		cluster_dic[cluster.number]['color'] = cevia.set_cluster_color(cluster.number)
+		[doc_list.append([doc.name,os.path.join('../../',doc.file.url)]) for doc in c_documents]
+		cluster_dic[cluster.number]['doc_list'] = doc_list
+	return render(request,'groups_of_files.html',{'csv_table' : sorted(cluster_dic.items()), 
+		'clusters_info' : sorted(clusters_info_dic.items())})
+
+
+
 
 ## DEPRECATED
 """
