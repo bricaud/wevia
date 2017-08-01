@@ -165,8 +165,9 @@ def node_to_doc_dic(search_results):
 		data_dic['score'] = 0
 		for (node,score) in search_results[text_id]:
 			position_list = node.get_paths(text_id)
+			nb_pos = len(position_list)
 			data_dic['position_info_list'] += [(pos,pos+len(node.expression),score) for pos in position_list]
-			data_dic['score'] += score 
+			data_dic['score'] += score*nb_pos 
 		results.append(data_dic)
 	results = sorted(results, key=lambda x: x['score'], reverse=True)
 	return results
@@ -189,7 +190,6 @@ def build_text_strips(data):
 	return results
 
 def group_in_strips(positions,surrounding_len):
-	print(positions)
 	strip_list = []
 	first_pos = positions[0]
 	postart = first_pos[0]
@@ -201,7 +201,6 @@ def group_in_strips(positions,surrounding_len):
 			strip.append(pos)
 			score += pos[2]
 		else:
-			print('save strip')
 			strip_list.append((strip,score))
 			strip = [pos]
 			score = pos[2]
@@ -230,79 +229,7 @@ def strip_to_expression(strip_list,surrounding_len,text):
 	return text_cuts
 
 
-def get_info_from_list_doc(search_results):
-	data_dic = {}
-	#print(search_results)
-	for (node,flux) in search_results:
-		expression = node.expression
-		expression_str = ' '.join(expression)
-		#print('Result: ',node.node_id)
-		#print(node.expression)
-		#print(expression_str)
-		doc_ids = node.get_text_ids()
-		for doc_id in doc_ids:
-			document_id,doc_info = get_info_from_doc(doc_id,expression,node.get_paths(doc_id))
-			doc_info['expression'] = expression_str
-			doc_info['expression_l'] = expression
-			doc_info['expression_weight'] = flux
-			if document_id not in data_dic:
-				data_dic[document_id] = []
-			data_dic[document_id].append(doc_info)
-	return data_dic
 
-
-def get_info_from_doc(doc_id,expression,list_of_positions):
-	documents_list = Document.objects.filter(id=doc_id)
-	document = documents_list[0]
-	# get document info
-	document_id = document.id
-	doc_text = document.text
-	data_dic = {}
-	data_dic['name'] = document.name
-	data_dic['cluster'] = document.get_cluster_id()
-	data_dic['url'] = document.get_url()
-	# get expression info
-	data_dic['word_positions'] = list_of_positions
-	expression_len = len(expression)
-	data_dic['expression_position'] = {}
-	for pos in list_of_positions:
-		text_before,text_after = txt2graph.get_surrounding_text_sliced(doc_text,pos,expression_len,nb_words=10)
-
-
-	data_dic['expression_positions'][pos] = (text_before+ expression +text_after,)
-	data_dic['text_before'] = text_before
-	data_dic['text_after'] = text_after
-	data_dic['text'] = text_before+ expression +text_after
-	return document_id,data_dic
-
-
-
-def process_expressions(info_dic):
-	expr_list = []
-	for entry in info_dic:
-		expression_weight = entry['expression_weight']
-		pos = entry['word_positions'][0]
-		t_before = entry['text_before']
-		expression = entry['expression_l']
-		t_after = entry['text_after']
-		pos_tb = pos-len(t_before)
-		pos_ta = pos+len(t_after)
-		expr_str = t_before + expression + t_after
-		for second_entry in info_dic:
-			expression_weight = max(expression_weight,second_entry['expression_weight'])
-			pos2 = second_entry['word_positions'][0]
-			t_before2 = second_entry['text_before']
-			expression2 = second_entry['expression_l']
-			t_after2 = second_entry['text_after']
-			pos_tb2 = pos2-len(t_before2)
-			pos_ta2 = pos2+len(t_after2)
-			expr_str2 = t_before2 + expression2 + t_after2
-			if (pos_tb>=pos_tb2 and pos_tb<=pos_ta2):
-				expr_str = expr_str2[:pos_tb-pos_tb2] + expr_str
-			elif (pos_ta>=pos_tb2 and pos_ta<=pos_ta2):
-				expr_str = expr_str[:pos_tb2-pos_tb] + expr_str2
-		expr_list.append((expr_str,expression_weight))
-	return expr_list
 
 
 
