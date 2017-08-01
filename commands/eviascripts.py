@@ -421,52 +421,19 @@ def get_info_from_list(search_results):
 		data_dic[expression_str] = {}
 		doc_ids = node.get_text_ids()
 		for doc_id in doc_ids:
-			document_id,doc_info = get_doc_info(doc_id,expression,node.get_paths(doc_id))
+			document_id,doc_info = get_info_from_doc(doc_id,expression,node.get_paths(doc_id))
 			data_dic[expression_str][document_id] = doc_info
 	return data_dic
 
-def get_doc_info(doc_id,expression,list_of_positions):
-	documents_list = Document.objects.filter(id=doc_id)
-	document = documents_list[0]
-	document_id = document.id
-	doc_text = document.text
-	expression_len = len(expression)
-	text_before,text_after = txt2graph.get_surrounding_text_sliced(doc_text,list_of_positions[0],expression_len,nb_words=10)
-	data_dic = {}
-	data_dic['name'] = document.name
-	data_dic['word_positions'] = list_of_positions
-	data_dic['text_before'] = text_before
-	data_dic['text_after'] = text_after
-	data_dic['text'] = text_before+ expression +text_after
-	try:
-		data_dic['cluster'] = document.cluster.number
-	except:
-		print('Warning: document {} does not belong to any cluster. Please run the classification.'
-			.format(data_dic['name']))
-		data_dic['cluster'] = -1
-	if os.path.isfile(document.file.path):
-		data_dic['url'] = document.file.url
-	else:
-		warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
-		' You may need to clean the database.')
-		warnings.warn(warnMessage)
-	return document_id,data_dic
 
 
-def make_search_doc_graphdb(search_string):
+def search_graphdb(search_string):
 	word_list = search_string.split()
 	G = grevia.wordgraph.Graph('GremlinGraph',settings.GRAPH_SERVER_ADDRESS)
 	#print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.find_similarity_nodes(word_list)
-	search_results = [(node,1./((node.degree_sim1+1)*(node.degree_sim2+1))) for node in search_results]
-	search_results = sorted(search_results, key=itemgetter(1),reverse=True)# lambda search_results : search_results[1], reverse=True)
-	#search_results = [(node,1./(node.degree_sim1)) for node in search_results]
-	
-	#search_results = add_flux_to_list(G,None,search_results,1./len(search_results))
-	data_dic = get_info_from_list_doc(search_results)
+	return search_results
 
-	console_message = 'Search results:'
-	return data_dic,console_message
 """
 def make_search_doc_graphdb(search_string):
 	word_list = search_string.split()
@@ -509,24 +476,6 @@ def add_flux_to_list(G,node,node_list,node_flux):
 	return [(node,weight / total_weight * node_flux) for (node,weight) in weight_list]
 
 
-def get_info_from_list_doc(search_results):
-	data_dic = {}
-	#print(search_results)
-	for (node,flux) in search_results:
-		expression = node.expression
-		expression_str = ' '.join(expression)
-		#print('Result: ',node.node_id)
-		#print(node.expression)
-		#print(expression_str)
-		doc_ids = node.get_text_ids()
-		for doc_id in doc_ids:
-			document_id,doc_info = get_doc_info(doc_id,expression,node.get_paths(doc_id))
-			doc_info['expression'] = expression_str
-			doc_info['expression_weight'] = flux
-			if document_id not in data_dic:
-				data_dic[document_id] = []
-			data_dic[document_id].append(doc_info)
-	return data_dic
 
 
 def update_dic(dic1,dic2):
