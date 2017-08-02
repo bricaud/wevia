@@ -129,10 +129,10 @@ def add_document_to_graph(db_entry,graphdb):
 	print('Making the graph...')
 	db_entries_dic = {}
 	db_entries_dic[db_entry['name']] = db_entry 
-	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
+	similarity_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
 	message_db = ''
 	console_message = output_message+ '\n' + message_db
-	return console_message
+	return similarity_dic,console_message
 
 
 def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths,GRAPH_SERVER_ADDRESS):
@@ -149,7 +149,7 @@ def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths,GRAPH_SERVER_AD
 		message = "Cannot access the graph database at "+GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
 		print(message)
 		return message
-	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
+	similarity_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
 	message_db = ''
 	console_message = output_message+ '\n' + message_db
 	return console_message
@@ -189,25 +189,6 @@ def save_nodes_in_db(node_dic):
 		pbar.update(1)
 	pbar.close()
 	return 'Nodes saved in DB.'
-
-def run_classify(evia_paths):
-	CSV_full_name = evia_paths.CSV_full_name
-	TXT_PICKLE = evia_paths.TXT_PICKLE
-	GRAPH_NAME = evia_paths.GRAPH_NAME
-	EX_TXT_PICKLE = evia_paths.EX_TXT_PICKLE
-	if not os.path.isfile(TXT_PICKLE):
-		print('No text data file. Please extract the text first with pdf2txt. ')
-		console_message = 'No text data file found. Please extract the text first with pdf2txt. '
-	elif not os.path.isfile(GRAPH_NAME):
-		print('No graph found at '+GRAPH_NAME+'. Please construct the graph first. ')
-		console_message = 'No graph found. Please construct the graph first. '
-	elif not os.path.isfile(EX_TXT_PICKLE):
-		print('No file with info on extracted text. Please extract the text first with pdf2txt. ')
-		console_message = 'No file with info on extracted text. Please extract the text first with pdf2txt. '
-	else:
-		txt2graph.doc_classif(GRAPH_NAME,TXT_PICKLE,EX_TXT_PICKLE,CSV_full_name)
-		console_message = 'CSV file containing the classification saved in {}'.format(CSV_full_name)
-	return console_message
 
 def run_classify_db(evia_paths):
 	CSV_full_name = evia_paths.CSV_full_name
@@ -521,4 +502,6 @@ def set_cluster_color(cluster_id):
 	])
 	if cluster_id==-1:
 		return '#333333'
+	if cluster_id>=20:
+		cluster_id = cluster_id % 20
 	return d3_category20[cluster_id]

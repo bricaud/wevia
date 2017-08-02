@@ -10,10 +10,13 @@ class Cluster(models.Model):
 	sharedWords = models.CharField(validators=[validators.validate_comma_separated_integer_list], max_length=4096)
 
 	def load_sharedWords(self,list_to_load):
-		self.sharedWords = json.dumps(list_to_load)
+		self.sharedWords = json.dumps(list_to_load, ensure_ascii=False)
 
 	def get_sharedWords(self):
-		return json.loads(self.sharedWords)
+		if self.sharedWords:
+			return json.loads(self.sharedWords)
+		else:
+			return []
 
 	def __str__(self):
 		return 'Cluster {}'.format(self.number)

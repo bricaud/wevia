@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone 
 from django.conf import settings
-import os,warnings
+import os,warnings,json
 
 
 class Document(models.Model):
@@ -19,6 +19,7 @@ class Document(models.Model):
 	txt_error = models.IntegerField(default=10)
 	nb_pages = models.IntegerField(default=0)
 	#is_classified = models.BooleanField(default=False)
+	similarity = models.CharField(max_length=4096, blank=True)
 	cluster = models.ForeignKey(to='classif.Cluster', related_name="elements",
 		null=True, blank=True, on_delete=models.SET_NULL, default=None)
 	is_in_graph = models.BooleanField(default=False)
@@ -40,6 +41,13 @@ class Document(models.Model):
 			' You may need to clean the database.')
 			warnings.warn(warnMessage)
 			return None
+
+	def set_similarity(self,dict_to_load):
+		self.similarity = json.dumps(dict_to_load, ensure_ascii=False)
+
+	def get_similarity(self):
+		return json.loads(self.similarity)
+
 
 	class Meta:
 		ordering = ('name',)

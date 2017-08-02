@@ -100,6 +100,28 @@ def add_to_graph(name,graph):
 	db_entry_r = Document.objects.get(name=name)
 	if not db_entry_r.is_in_graph:
 		db_entry_dic = {'name':db_entry_r.name, 'id':db_entry_r.id, 'text':db_entry_r.text}
-		cevia.add_document_to_graph(db_entry_dic,graph)
+		similarity_dic,message = cevia.add_document_to_graph(db_entry_dic,graph)
 		db_entry_r.is_in_graph = True
+		similarity_dic = filter_short_words(similarity_dic[db_entry_r.id],db_entry_r.id)
+		try:
+			db_entry_r.set_similarity(similarity_dic)
+		except:
+			print('Cannot store similarity field in Document entry {}'.format(db_entry_r.name))
+			db_entry_r.save()
 		db_entry_r.save()
+		print(db_entry_r.get_similarity())
+
+def filter_short_words(data_dic,doc_id):
+	filtered_data_dic = {}
+	for text_id in data_dic:
+		for expression in data_dic[text_id]:
+			if len("".join(expression))>5:
+				if not text_id in filtered_data_dic:
+					filtered_data_dic[text_id] = []
+				filtered_data_dic[text_id].append(" ".join(expression))
+	# replace self similarity list of words by the number of words
+	own_words = filtered_data_dic[doc_id]
+	filtered_data_dic[doc_id] = len(own_words)
+	return filtered_data_dic
+
+

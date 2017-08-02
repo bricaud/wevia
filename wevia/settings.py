@@ -151,3 +151,5 @@ UPLOAD_PATH = 'weviana/files/%Y/%m/%d' # relative path from MEDIA_ROOT
 # Adress of the graph database
 GRAPH_SERVER_ADDRESS = 'localhost:8182'
 #GRAPH_SERVER_PORT = '8182'
+
+DOC_GRAPH_PATH = os.path.join(DATA_DIR,'docgraph.pkl')

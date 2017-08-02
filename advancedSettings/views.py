@@ -20,12 +20,18 @@ def index(request):
 		output = run_clean_db()
 	if(request.GET.get('erase_db')):
 		output = run_erase_db()
+	if(request.GET.get('erase_clusters')):
+		output = run_erase_clusters()	
 	if(request.GET.get('check_graphdb')):
 		output = run_check_graphdb()
 	if(request.GET.get('clean_graphdb')):
 		output = run_clean_graphdb()
 	if(request.GET.get('erase_graphdb')):
 		output = run_erase_graphdb()
+	if(request.GET.get('check_docgraph')):
+		output = run_check_docgraph()
+	if(request.GET.get('erase_docgraph')):
+		output = run_erase_docgraph()
 	return render(request,'advancedSettings/advanced_settings.html',
 		{'console_message' :output})
 
@@ -76,6 +82,10 @@ def run_erase_db():
 	GraphNode.objects.all().delete()
 	return 'Database erased.'
 
+def run_erase_clusters():
+	Cluster.objects.all().delete()
+	return 'Clusters in Database erased.'
+
 
 #############################################
 #### Graphe database
@@ -105,3 +115,22 @@ def run_clean_graphdb():
 
 def run_erase_graphdb():
 	return cevia.erase_graphdb(settings.GRAPH_SERVER_ADDRESS)
+
+
+#############################################
+#### Graphe de documents
+
+def run_check_docgraph():
+	try:
+		graph_object = grevia.docgraph.Graph.load(settings.DOC_GRAPH_PATH)
+	except:
+		message = "Cannot access the graph of document at "+settings.DOC_GRAPH_PATH+"."
+		print(message)
+		return message	
+	return ("""Graph with {} nodes and {} edges."""
+		.format(graph_object.number_of_nodes(),graph_object.number_of_edges()))
+
+def run_erase_docgraph():
+	new_graph = grevia.docgraph.Graph()
+	new_graph.save(settings.DOC_GRAPH_PATH)
+	return 'Graph of document erased.'

@@ -19,7 +19,7 @@
 	<tr style="background-color: {{ value.color }};""> 
 		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">
 			<a name="{{ key }}"></a>
-			<a href="#{{ key }}_info">Group {{ key }}</a> <BR> Cfdce:&nbsp;{{ value.confidence }}
+			<a href="../dbinfo/{{ key }}"> Group {{ key }}</a> <BR> Cfdce:&nbsp;{{ value.confidence }}
 		</td>
 
 		{% for item in value.doc_list %}

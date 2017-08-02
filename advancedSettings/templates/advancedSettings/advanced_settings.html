@@ -30,6 +30,12 @@
 		<input type="submit" class="btn" value="Erase the database" name="erase_db"> Effacement de la base de donn&eacute;es
 	</form>
 	</div>
+	<div>
+	<form action="#" method="get">
+		<i class="fa fa-eraser fa-border" aria-hidden="true"></i> 
+		<input type="submit" class="btn" value="Erase the document clusters" name="erase_clusters"> Effacement des clusters de documents
+	</form>
+	</div>
 </p>
 </div>
 <div class="evia">
@@ -55,6 +61,25 @@
 	</div>
 </p>
 </div>
+</div>
+<div class="evia">
+<p>Graphe de documents</p>
+<p style="text-align: center;">
+	<div>	
+	<form action="#" method="get">
+		<i class="fa fa-search fa-border" aria-hidden="true"></i> 
+		<input type="submit" class="btn" value="Check the database" name="check_docgraph"> V&eacute;rifier le graphe des documents
+	</form>
+	</div>
+	<div>
+	<form action="#" method="get">
+		<i class="fa fa-eraser fa-border" aria-hidden="true"></i> 
+		<input type="submit" class="btn" value="Erase the database" name="erase_docgraph"> Effacer le graphe de documents
+	</form>
+	</div>
+</p>
+</div>
+<p>{{ console_message }}</p>
 <div>
 	<div  style="display: inline-block;width: 200px;vertical-align: top;">
  		<a href="../graphdesign/">
@@ -77,5 +102,4 @@
 		<a href="../"><i class="fa fa-home fa-3x fa-border" aria-hidden="true"></i></a>
 		<p>Retour au menu</p>
 </div>
-<p>{{ console_message }}</p>
 </body>
