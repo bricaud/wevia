@@ -40,36 +40,24 @@
 {% if query %}
 <p>Search results for "{{ query }}"</p>
 	{% if search_results %}
-	<table style="border-collapse: collapse;">
-		<tr>
-			<th style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">Group</th>
-			<th>Document</th>
-			<th>Expression</th>
-			<th>Expression weight</th>
-			<th>Positions</th>
-			<th>Surrounding text</th>
-		</tr>
 		{% for info_dic in search_results %}
-		{% if info_dic.expression_weight > 0.01 %}
-		<tr>
-			<td style="border: 1px solid black; padding: 5px;background-color: {{ info_dic.color }};">{{ info_dic.cluster }}</td>
-			<td style="border: 1px solid black; padding: 5px;background-color: {{ info_dic.color }};"><a href="../../{{ info_dic.url }}"> {{ info_dic.name }}</a><a href="../dbinfomod/{{ info_dic.name }}"> DB</a></td>
-			<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">{{ info_dic.expression }}</td>
-			{% if info_dic.expression_weight > 0.1 %}
-				<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">
-					{{ info_dic.expression_weight|floatformat:-4 }}
-				</td>
-			{% else %}
-				<td style="border: 2px solid black; background-color: #444444; padding: 5px;">
-					{{ info_dic.expression_weight|floatformat:-4 }}
-				</td>
-			{% endif %}
-			<td style="border: 1px solid black; padding: 5px;">{{ info_dic.word_positions}}</td>
-			<td style="border: 1px solid black; padding: 5px;">{{ info_dic.text}}</td>
-		</tr>
-		{% endif %}
+			<span style="background-color: {{ info_dic.color }};">{{ info_dic.cluster }}</span>
+			<a href="../{{ info_dic.url }}"> {{ info_dic.name }}</a><a href="dbinfomod/{{ info_dic.name }}"> DB</a> Score: {{ info_dic.score|floatformat:-4  }}
+			<ul style="list-style-type:none">
+			{% for text_list,text_score in info_dic.expression_list %}
+				<li> ... 
+				{% for text,emphasize in text_list %}
+					{% if emphasize %}
+						<b> {{ text }} </b>
+					{% else %}
+						{{ text }}
+					{% endif %}
+				{% endfor %}
+				... Score: 
+				{{ text_score|floatformat:-4  }} </li>
+			{% endfor %}
+			</ul>
 		{% endfor %}
-	</table>
 	{% else %}
 	<p> {{ query }} not found.</p>
 	{% endif %}

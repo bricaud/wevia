@@ -1,0 +1,34 @@
+<head>
+	<title>Evia search</title>
+	<link rel="icon" href="../favicon.ico" />
+	{% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" >
+	<link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}" />
+	<link rel="stylesheet" href="{% static 'css/style_links.css' %}" />
+</head>
+<body>
+<img src="{% static 'images/eviacyberneticsalign.png' %}" width="200px"/>
+<h1>Groups of files</h1>
+<div class="evia">
+<div style="display: inline-block;vertical-align: top;">
+		<a href="../../"><i class="fa fa-home fa-border" aria-hidden="true"></i></a>
+</div>
+<p>{{ console_message }}</p>
+<table style="border-collapse: collapse;">
+	{% for key,value in csv_table %}
+	<tr style="background-color: {{ value.color }};""> 
+		<td style="border: 2px solid black; background-color: #CCCCCC; padding: 5px;">
+			<a name="{{ key }}"></a>
+			<a href="../dbinfo/{{ key }}"> Group {{ key }}</a> <BR> Cfdce:&nbsp;{{ value.confidence }}
+		</td>
+
+		{% for item in value.doc_list %}
+			<td style="border: 1px solid black; padding: 5px;"><a href="{{ item.1 }}"> {{ item.0 }} </a></td>
+		{% endfor %}
+
+	</tr>
+	{% endfor %}
+</table>
+
+</div>
+</body>

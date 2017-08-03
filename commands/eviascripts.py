@@ -18,7 +18,7 @@ from graphdesign.models import GraphNode, DocumentIndex
 from fileupload.models import Document
 from classif.models import Cluster
 
-import grevia.wordgraph as wordgraph
+import grevia
 
 from operator import itemgetter
 
@@ -125,19 +125,50 @@ def make_graph(graph_threshold,evia_paths):
 	return console_message
 """
 
+def add_document_to_graph(db_entry,graphdb):
+	print('Making the graph...')
+	db_entries_dic = {}
+	db_entries_dic[db_entry['name']] = db_entry 
+	similarity_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
+	message_db = ''
+	console_message = output_message+ '\n' + message_db
+	return similarity_dic,console_message
+
+
 def make_graph_from_db(db_entries_dic,graph_threshold,evia_paths,GRAPH_SERVER_ADDRESS):
 	GRAPH_NAME = evia_paths.GRAPH_NAME
 	if not db_entries_dic:
 		print('empty database!')
 		return 'empty database!'
+	print('Deleting previous graph...')
+	msg_delete = erase_graphdb(GRAPH_SERVER_ADDRESS)
 	print('Making the graph...')
-	node_dic,output_message = txt2graph.run_from_db(db_entries_dic,GRAPH_SERVER_ADDRESS,GRAPH_NAME,min_weight=graph_threshold,max_iter=20000)
-	print('Graph saved in file {}'.format(GRAPH_NAME))
-	#print('Saving nodes in database...')
-	#message_db = save_nodes_in_db(node_dic)
+	try:
+		graphdb = grevia.wordgraph.Graph('GremlinGraph',GRAPH_SERVER_ADDRESS)
+	except:
+		message = "Cannot access the graph database at "+GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
+		print(message)
+		return message
+	similarity_dic,output_message = txt2graph.run_from_db(db_entries_dic,graphdb)
 	message_db = ''
-	console_message = output_message+ '\n' + 'Graph saved in file {}'.format(GRAPH_NAME) + '\n' + message_db
+	console_message = output_message+ '\n' + message_db
 	return console_message
+
+def erase_graphdb(GRAPH_SERVER_ADDRESS):
+	try:
+		graph_object = grevia.wordgraph.Graph('GremlinGraph',GRAPH_SERVER_ADDRESS)
+		graph_object.remove_all()
+	except:
+		message = "Cannot access the graph database at "+GRAPH_SERVER_ADDRESS+". Please check the Gremlin server."
+		print(message)
+		return message
+	
+	all_documents = Document.objects.all()
+	for document in all_documents:
+		document.is_in_graph = False
+		document.save()
+	return 'Database erased.'
+
 
 def save_nodes_in_db(node_dic):
 	nb_nodes = len(node_dic)
@@ -158,25 +189,6 @@ def save_nodes_in_db(node_dic):
 		pbar.update(1)
 	pbar.close()
 	return 'Nodes saved in DB.'
-
-def run_classify(evia_paths):
-	CSV_full_name = evia_paths.CSV_full_name
-	TXT_PICKLE = evia_paths.TXT_PICKLE
-	GRAPH_NAME = evia_paths.GRAPH_NAME
-	EX_TXT_PICKLE = evia_paths.EX_TXT_PICKLE
-	if not os.path.isfile(TXT_PICKLE):
-		print('No text data file. Please extract the text first with pdf2txt. ')
-		console_message = 'No text data file found. Please extract the text first with pdf2txt. '
-	elif not os.path.isfile(GRAPH_NAME):
-		print('No graph found at '+GRAPH_NAME+'. Please construct the graph first. ')
-		console_message = 'No graph found. Please construct the graph first. '
-	elif not os.path.isfile(EX_TXT_PICKLE):
-		print('No file with info on extracted text. Please extract the text first with pdf2txt. ')
-		console_message = 'No file with info on extracted text. Please extract the text first with pdf2txt. '
-	else:
-		txt2graph.doc_classif(GRAPH_NAME,TXT_PICKLE,EX_TXT_PICKLE,CSV_full_name)
-		console_message = 'CSV file containing the classification saved in {}'.format(CSV_full_name)
-	return console_message
 
 def run_classify_db(evia_paths):
 	CSV_full_name = evia_paths.CSV_full_name
@@ -363,7 +375,7 @@ def make_search_db(search_string):
 
 def make_search_graphdb(search_string):
 	word_list = search_string.split()
-	G = wordgraph.Graph(settings.GRAPH_SERVER_ADDRESS)
+	G = grevia.wordgraph.Graph('GremlinGraph',settings.GRAPH_SERVER_ADDRESS)
 	print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.contains_words(word_list)
 	data_dic = get_info_from_list(search_results)
@@ -390,49 +402,19 @@ def get_info_from_list(search_results):
 		data_dic[expression_str] = {}
 		doc_ids = node.get_text_ids()
 		for doc_id in doc_ids:
-			document_id,doc_info = get_doc_info(doc_id,node.get_paths(doc_id))
+			document_id,doc_info = get_info_from_doc(doc_id,expression,node.get_paths(doc_id))
 			data_dic[expression_str][document_id] = doc_info
 	return data_dic
 
-def get_doc_info(doc_id,list_of_positions):
-	documents_list = Document.objects.filter(id=doc_id)
-	document = documents_list[0]
-	document_id = document.id
-	doc_text = document.text
-	text_around = txt2graph.get_surrounding_text(doc_text,list_of_positions[0],nb_words=10)
-	data_dic = {}
-	data_dic['name'] = document.name
-	data_dic['word_positions'] = list_of_positions
-	data_dic['text'] = text_around
-	try:
-		data_dic['cluster'] = document.cluster.number
-	except:
-		print('Warning: document {} does not belong to any cluster. Please run the classification.'
-			.format(data_dic['name']))
-		data_dic['cluster'] = -1
-	if os.path.isfile(document.file.path):
-		data_dic['url'] = document.file.url
-	else:
-		warnMessage = ('Cannot find file for database entry. Document: "{}".'.format(document.name) +
-		' You may need to clean the database.')
-		warnings.warn(warnMessage)
-	return document_id,data_dic
 
 
-def make_search_doc_graphdb(search_string):
+def search_graphdb(search_string):
 	word_list = search_string.split()
-	G = wordgraph.Graph(settings.GRAPH_SERVER_ADDRESS)
-	print('Nb of nodes ',G.number_of_nodes())
+	G = grevia.wordgraph.Graph('GremlinGraph',settings.GRAPH_SERVER_ADDRESS)
+	#print('Nb of nodes ',G.number_of_nodes())
 	search_results = G.find_similarity_nodes(word_list)
-	search_results = [(node,1./((node.degree_sim1+1)*(node.degree_sim2+1))) for node in search_results]
-	search_results = sorted(search_results, key=itemgetter(1),reverse=True)# lambda search_results : search_results[1], reverse=True)
-	#search_results = [(node,1./(node.degree_sim1)) for node in search_results]
-	
-	#search_results = add_flux_to_list(G,None,search_results,1./len(search_results))
-	data_dic = get_info_from_list_doc(search_results)
+	return search_results
 
-	console_message = 'Search results:'
-	return data_dic,console_message
 """
 def make_search_doc_graphdb(search_string):
 	word_list = search_string.split()
@@ -475,24 +457,6 @@ def add_flux_to_list(G,node,node_list,node_flux):
 	return [(node,weight / total_weight * node_flux) for (node,weight) in weight_list]
 
 
-def get_info_from_list_doc(search_results):
-	data_dic = {}
-	#print(search_results)
-	for (node,flux) in search_results:
-		expression = node.expression
-		expression_str = ' '.join(expression)
-		#print('Result: ',node.node_id)
-		#print(node.expression)
-		#print(expression_str)
-		doc_ids = node.get_text_ids()
-		for doc_id in doc_ids:
-			document_id,doc_info = get_doc_info(doc_id,node.get_paths(doc_id))
-			doc_info['expression'] = expression_str
-			doc_info['expression_weight'] = flux
-			if document_id not in data_dic:
-				data_dic[document_id] = []
-			data_dic[document_id].append(doc_info)
-	return data_dic
 
 
 def update_dic(dic1,dic2):
@@ -521,3 +485,23 @@ def update_dic(dic1,dic2):
 			dic1[doc] = list_to_add
 	return dic1
 """
+
+
+
+def set_cluster_color(cluster_id):
+	d3_category20 = (['#1f77b4', '#aec7e8',
+		'#ff7f0e', '#ffbb78',
+		'#2ca02c', '#98df8a',
+		'#d62728', '#ff9896',
+		'#9467bd', '#c5b0d5',
+		'#8c564b', '#c49c94',
+		'#e377c2', '#f7b6d2',
+		'#7f7f7f', '#c7c7c7',
+		'#bcbd22', '#dbdb8d',
+		'#17becf', '#9edae5'
+	])
+	if cluster_id==-1:
+		return '#333333'
+	if cluster_id>=20:
+		cluster_id = cluster_id % 20
+	return d3_category20[cluster_id]
