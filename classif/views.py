@@ -8,7 +8,8 @@ from django.conf import settings
 from classif.models import Cluster
 from fileupload.models import Document
 import grevia
-
+from collections import Counter
+from operator import itemgetter
 stdoutstream = io.StringIO()
 
 
@@ -94,8 +95,11 @@ def request_groups_of_files(request):
 
 		cluster_keywords_form_doc = get_cluster_keywords(uc_doc,new_cluster.number,docgraph)
 		cluster_keywords = new_cluster.get_sharedWords()
-		cluster_keywords += cluster_keywords_form_doc
-		new_cluster.load_sharedWords(cluster_keywords)
+		cluster_keywords = Counter(cluster_keywords) + Counter(cluster_keywords_form_doc)
+		#print(cluster_keywords)
+		#cluster_keywords = sorted(cluster_keywords.items(),key = itemgetter(1),reverse=True)
+		#print(cluster_keywords)
+		new_cluster.set_sharedWords(cluster_keywords)
 		new_cluster.save()
 		uc_doc.cluster = new_cluster
 		uc_doc.save()
@@ -154,7 +158,10 @@ def compute_cluster_id(cluster_score,cluster_id_list):
 			best_cluster = Cluster.objects.get(number=best_cluster_number)
 			return best_cluster
 		s_c_list = sorted(cluster_id_list)
-		new_cluster_id = s_c_list[-1]+1
+		if s_c_list:
+			new_cluster_id = s_c_list[-1]+1
+		else:
+			new_cluster_id = 1
 		return Cluster(name='Cluster_'+str(new_cluster_id), number=int(new_cluster_id), confidence=100)
 	else:
 		if cluster_id_list:
